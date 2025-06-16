@@ -1,0 +1,4 @@
+/backend/venv
+backend/media
+backend/scenes
+backend/__pycache__
