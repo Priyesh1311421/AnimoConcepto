@@ -2,3 +2,6 @@
 backend/media
 backend/scenes
 backend/__pycache__
+/backend/.venv3.12
+/backend/.env
+.env

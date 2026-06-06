@@ -10,6 +10,7 @@ from typing import Optional, List
 import os
 import subprocess
 import re
+import sys
 
 from auth import hash_password, verify_password, create_access_token, decode_token
 from openrouter_wrapper import generate_manim_code
@@ -57,6 +58,16 @@ def extract_code_block(llm_output: str) -> str:
     match = re.search(r"```python(.*?)```", llm_output, re.DOTALL)
     return match.group(1).strip() if match else llm_output.strip()
 
+
+def _replace_tex_with_text(code: str) -> str:
+    """Replace manim Tex(...) with Text(...) to avoid requiring LaTeX.
+
+    This is a pragmatic fallback for environments without a TeX installation.
+    It does a simple token replacement and preserves the inner content.
+    """
+    # Replace class calls like Tex("..."), Tex(r"..."), Tex('...')
+    return re.sub(r"\bTex\s*\(", "Text(", code)
+
 async def get_user(authorization: str = Header(...)):
     try:
         token = authorization.split(" ")[1]
@@ -78,7 +89,10 @@ async def register(email: str, password: str):
 
 @app.post("/login")
 async def login(email: str, password: str):
+    print(email)
+    print(password)
     user = await db.users.find_one({"email": email})
+    print(user["hashed_password"])
     if not user or not verify_password(password, user["hashed_password"]):
         raise HTTPException(401, "Invalid credentials")
     token = create_access_token({"user_id": str(user["_id"])});
@@ -143,7 +157,7 @@ async def generate(prompt: Prompt, user=Depends(get_user)):
     scene_filename = "scene.py"
     script_path = os.path.join(scenes_dir, scene_filename)
     scene_name = "GeneratedScene"
-    video_output_dir = os.path.join(media_dir, "videos","scene")
+    video_output_dir = os.path.join(media_dir, "videos","scene","480p15")
     os.makedirs(video_output_dir, exist_ok=True)
     video_path = os.path.join(video_output_dir, f"{scene_name}.mp4")
     log_path = os.path.join(media_dir, "render.log")
@@ -155,7 +169,7 @@ async def generate(prompt: Prompt, user=Depends(get_user)):
             "user_id": user["_id"]
         }).sort("created_at", 1)
 
-        history = await history_cursor.to_list()
+        history = await history_cursor.to_list(length=100)
 
         # Format previous messages as chat history
         conversation = [{"role": p["role"], "content": p["prompt"]} for p in history]
@@ -170,12 +184,16 @@ async def generate(prompt: Prompt, user=Depends(get_user)):
         if f"class {scene_name}" not in code:
             raise HTTPException(500, f"Generated code must contain 'class {scene_name}'")
 
+        # fallback: if generated code uses Tex(...) and no LaTeX is available,
+        # replace Tex with Text to avoid runtime FileNotFoundError from pdflatex.
+        safe_code = _replace_tex_with_text(code)
+
         with open(script_path, "w") as f:
-            f.write(code)
+            f.write(safe_code)
 
         with open(log_path, "w") as log_file:
             subprocess.run(
-                ["manim", "-ql", script_path, scene_name, "--media_dir", media_dir],
+                [sys.executable, "-m", "manim", "-ql", script_path, scene_name, "--media_dir", media_dir],
                 stdout=log_file,
                 stderr=log_file,
                 check=True
@@ -205,7 +223,7 @@ async def generate(prompt: Prompt, user=Depends(get_user)):
 
         return {
             "status": "rendered",
-            "video_url": f"/video/{user["_id"]}/{result.inserted_id}",
+            "video_url": f"/video/{result.inserted_id}",
             "scene": scene_name
         }
 
