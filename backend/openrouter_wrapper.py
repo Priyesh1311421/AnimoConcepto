@@ -1,7 +1,9 @@
+import ast
 import importlib
 import os
 import re
 from pathlib import Path
+
 
 SYSTEM_PROMPT = """
 You are an expert Manim Python code generation engine.
@@ -37,11 +39,19 @@ MANIM REQUIREMENTS:
 7. No placeholders.
 8. No natural language.
 9. Never use Tex or MathTex. Use only Text().
+11. Do not use external images, files, assets, APIs, or dependencies.
+12. The video generated should be atleast 30sec long
+13. The video should not have any overlapping text or object
 
 FINAL RULE:
 
 The entire response must be a single valid Python source file and nothing else.
 """
+
+
+FORBIDDEN_PATTERNS = [
+    "SVGMobject(",
+]
 
 
 def _load_dotenv_file() -> None:
@@ -65,6 +75,27 @@ def _load_dotenv_file() -> None:
             os.environ[key] = value
 
 
+def _strip_markdown_fences(code: str) -> str:
+    code = code.strip()
+
+    if code.startswith("```"):
+        code = re.sub(r"^```(?:python)?\s*", "", code)
+
+    if code.endswith("```"):
+        code = re.sub(r"\s*```$", "", code)
+
+    return code.strip()
+
+
+def _extract_python_source(code: str) -> str:
+    idx = code.find("from manim import *")
+
+    if idx != -1:
+        return code[idx:].strip()
+
+    return code.strip()
+
+
 def _normalize_scene_name(code: str) -> str:
     if "class GeneratedScene(Scene):" in code:
         return code
@@ -79,16 +110,31 @@ def _normalize_scene_name(code: str) -> str:
     return code
 
 
-def _strip_markdown_fences(code: str) -> str:
-    code = code.strip()
+def _validate_generated_code(code: str) -> None:
+    try:
+        ast.parse(code)
+    except SyntaxError as e:
+        raise RuntimeError(
+            f"Generated invalid Python code: {e}"
+        )
 
-    if code.startswith("```"):
-        code = re.sub(r"^```(?:python)?\s*", "", code)
+    for pattern in FORBIDDEN_PATTERNS:
+        if pattern in code:
+            raise RuntimeError(
+                f"Forbidden Manim construct detected: {pattern}"
+            )
 
-    if code.endswith("```"):
-        code = re.sub(r"\s*```$", "", code)
+    if "from manim import *" not in code:
+        raise RuntimeError(
+            "Generated code is missing 'from manim import *'."
+        )
 
-    return code.strip()
+    if "class GeneratedScene(Scene):" not in code:
+        raise RuntimeError(
+            "GeneratedScene class not found."
+        )
+
+    compile(code, "<generated>", "exec")
 
 
 def generate_manim_code(messages: list) -> str:
@@ -120,44 +166,63 @@ def generate_manim_code(messages: list) -> str:
     )
 
     if latest_user_message is None:
-        raise RuntimeError("No user message found.")
+        raise RuntimeError(
+            "No user message found."
+        )
+
+    task = latest_user_message["content"]
+
+    prompt = f"""
+        Generate Manim code for the following task.
+
+        Requirements:
+        - Output only executable Python code.
+        - No markdown.
+        - No explanations.
+        - No prose.
+        - No backticks.
+        - Must define class GeneratedScene(Scene).
+        - Must be self-contained.
+        - No external assets.
+
+        Task:
+        {task}
+    """
 
     try:
-        genai = importlib.import_module("google.generativeai")
+        genai = importlib.import_module(
+            "google.generativeai"
+        )
 
-        genai.configure(api_key=gemini_api_key)
+        genai.configure(
+            api_key=gemini_api_key
+        )
 
         model = genai.GenerativeModel(
             model_name=gemini_model,
             system_instruction=SYSTEM_PROMPT,
         )
 
-        chat = model.start_chat(history=[])
-
-        response = chat.send_message(
-            latest_user_message["content"]
+        response = model.generate_content(
+            prompt
         )
-
         print(response)
         code = getattr(response, "text", "")
 
         if not code:
-            raise RuntimeError("Empty response from Gemini.")
+            raise RuntimeError(
+                "Empty response from Gemini."
+            )
 
         code = _strip_markdown_fences(code)
+        code = _extract_python_source(code)
         code = _normalize_scene_name(code)
 
-        if "from manim import *" not in code:
-            raise RuntimeError(
-                "Generated code is missing 'from manim import *'."
-            )
-
-        if "class GeneratedScene(Scene):" not in code:
-            raise RuntimeError(
-                "GeneratedScene class not found."
-            )
+        _validate_generated_code(code)
 
         return code
 
     except Exception as e:
-        raise RuntimeError(f"Gemini API error: {e}")
+        raise RuntimeError(
+            f"Gemini API error: {e}"
+        )
