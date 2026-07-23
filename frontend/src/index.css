@@ -2,17 +2,18 @@
 @import "tailwindcss";
 
 @theme {
-  --color-brand-50: #f5f3ff;
-  --color-brand-100: #ede9fe;
-  --color-brand-200: #ddd6fe;
-  --color-brand-300: #c4b5fd;
-  --color-brand-400: #a78bfa;
-  --color-brand-500: #8b5cf6;
-  --color-brand-600: #7c3aed;
-  --color-brand-700: #6d28d9;
-  --color-brand-800: #5b21b6;
-  --color-brand-900: #4c1d95;
-  --color-brand-950: #2e1065;
+  /* ─── Deep Space & Ink Black Palette ─── */
+  --color-brand-50: #e0f2fe;
+  --color-brand-100: #bae6fd;
+  --color-brand-200: #7dd3fc;
+  --color-brand-300: #38bdf8;
+  --color-brand-400: #0084c7;
+  --color-brand-500: #005a96;
+  --color-brand-600: #00406c;
+  --color-brand-700: #002e4e;
+  --color-brand-800: #002137;
+  --color-brand-900: #001a2c;
+  --color-brand-950: #00111c;
 
   --animate-shimmer: shimmer 2s infinite linear;
   --animate-pulse-slow: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
@@ -25,7 +26,7 @@
 
 @layer base {
   body {
-    background-color: #0b0b14;
+    background-color: #00111c;
     color: #ffffff;
     font-family: 'Inter', sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -43,23 +44,23 @@
 }
 
 .scrollbar-thin::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(0, 17, 28, 0.5);
   border-radius: 8px;
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(0, 64, 108, 0.4);
   border-radius: 8px;
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: rgba(139, 92, 246, 0.3);
+  background: rgba(0, 132, 199, 0.6);
 }
 
 /* Input Range Customization for Video Player */
 input[type="range"] {
   -webkit-appearance: none;
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.15);
   border-radius: 4px;
 }
 
@@ -73,10 +74,10 @@ input[type="range"]::-webkit-slider-thumb {
   height: 12px;
   width: 12px;
   border-radius: 50%;
-  background: #8b5cf6;
+  background: #38bdf8;
   cursor: pointer;
   margin-top: -4px;
-  box-shadow: 0 0 8px rgba(139, 92, 246, 0.8);
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.8);
   transition: transform 0.1s ease;
 }
 

@@ -12,28 +12,28 @@ const TEMPLATES = [
     description: 'Create an animation explaining embeddings, transformers, or text tokens.',
     prompt: 'create a video to explain llms',
     icon: Brain,
-    color: 'from-purple-500/20 to-indigo-500/10 border-purple-500/30 text-purple-400',
+    color: 'border-[#002e4e] bg-[#001a2c] text-[#38bdf8] hover:border-[#00406c]',
   },
   {
     title: 'Binary Search Visualizer',
     description: 'Animate target comparison and pointer bounds division.',
     prompt: 'create a video to visualize binary search index narrowing on a sorted array',
     icon: Binary,
-    color: 'from-blue-500/20 to-cyan-500/10 border-blue-500/30 text-blue-400',
+    color: 'border-[#002e4e] bg-[#001a2c] text-[#38bdf8] hover:border-[#00406c]',
   },
   {
     title: 'Fourier Series Circles',
     description: 'Animate multiple rotating vectors drawing a complex wave.',
     prompt: 'create a video demonstrating fourier series sum of rotating vector circles drawing a square wave',
     icon: RefreshCw,
-    color: 'from-pink-500/20 to-rose-500/10 border-pink-500/30 text-pink-400',
+    color: 'border-[#002e4e] bg-[#001a2c] text-[#38bdf8] hover:border-[#00406c]',
   },
   {
     title: 'Linear Transformation',
     description: 'Visualize matrix grid warping, translation, and vector transformation.',
     prompt: 'create a video showing linear transformation of a 2D grid space scaling and rotating basis vectors',
     icon: Orbit,
-    color: 'from-amber-500/20 to-orange-500/10 border-amber-500/30 text-amber-400',
+    color: 'border-[#002e4e] bg-[#001a2c] text-[#38bdf8] hover:border-[#00406c]',
   },
 ];
 
@@ -45,12 +45,12 @@ export const QuickTemplates: React.FC<QuickTemplatesProps> = ({ onSelectPrompt }
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.5 }}
-          className="inline-flex items-center gap-2 rounded-full border border-brand-500/30 bg-brand-500/10 px-4 py-1.5 text-xs text-brand-300 mb-4"
+          className="inline-flex items-center gap-2 rounded-full border border-[#002e4e] bg-[#001a2c] px-4 py-1.5 text-xs text-[#38bdf8] mb-4"
         >
           <Sparkles className="h-3.5 w-3.5 animate-pulse" />
           <span>Select a starter prompt below</span>
         </motion.div>
-        <h2 className="text-3xl font-black bg-gradient-to-r from-white via-indigo-100 to-brand-300 bg-clip-text text-transparent font-outfit">
+        <h2 className="text-3xl font-black bg-gradient-to-r from-white via-sky-100 to-[#38bdf8] bg-clip-text text-transparent font-outfit">
           What would you like to animate?
         </h2>
         <p className="mt-2 text-slate-400 text-sm max-w-md mx-auto">

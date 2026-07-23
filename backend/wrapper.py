@@ -156,37 +156,27 @@ def generate_manim_code(messages: list) -> str:
             "Gemini API key not configured. Set GEMINI_API_KEY."
         )
 
-    latest_user_message = next(
-        (
-            message
-            for message in reversed(messages)
-            if message.get("role") == "user"
-        ),
-        None,
-    )
-
-    if latest_user_message is None:
-        raise RuntimeError(
-            "No user message found."
-        )
-
-    task = latest_user_message["content"]
+    # Format full conversation history for context-aware multi-turn generation
+    conversation_history_text = ""
+    for msg in messages:
+        role = "User Prompt" if msg.get("role") == "user" else "Assistant Generated Code"
+        content = msg.get("content", "").strip()
+        conversation_history_text += f"\n--- {role} ---\n{content}\n"
 
     prompt = f"""
-        Generate Manim code for the following task.
+        Generate Manim Community Edition code based on the conversation history below.
+        If the latest user prompt requests modifications, refactorings, timing changes, color adjustments, or additions to previous animations, update the previously generated code accordingly while maintaining valid syntax and structure.
 
         Requirements:
         - Output only executable Python code.
-        - No markdown.
-        - No explanations.
-        - No prose.
-        - No backticks.
+        - No markdown formatting or triple backticks.
+        - No explanations or natural language text.
         - Must define class GeneratedScene(Scene).
-        - Must be self-contained.
-        - No external assets.
+        - Must be self-contained and import from manim import *.
+        - Use Text() instead of Tex() or MathTex().
 
-        Task:
-        {task}
+        Conversation History:
+        {conversation_history_text}
     """
 
     try:

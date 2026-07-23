@@ -1,6 +1,7 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Trash2, Video, LogOut, MessageSquare } from 'lucide-react';
+import { Plus, Trash2, Video, LogOut, MessageSquare, ArrowLeft } from 'lucide-react';
 
 interface Conversation {
   id: string;
@@ -25,27 +26,40 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onDelete,
   onLogout,
 }) => {
+  const navigate = useNavigate();
+
   return (
-    <aside className="flex h-screen w-80 flex-col border-r border-white/10 bg-[#0f0f1c] text-white">
-      {/* Brand Header */}
-      <div className="flex h-16 items-center gap-3 px-6 border-b border-white/5">
-        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-tr from-brand-600 to-indigo-500 shadow-md shadow-brand-500/20">
-          <Video className="h-5 w-5 text-white" />
+    <aside className="flex h-screen w-80 flex-col border-r border-[#002e4e] bg-[#001a2c] text-white">
+      {/* Brand Header with Back to Home */}
+      <div className="flex h-16 items-center justify-between px-4 border-b border-[#002e4e]">
+        <button
+          onClick={() => navigate('/')}
+          className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-400 hover:bg-[#00253e] hover:text-white transition-colors"
+          title="Back to Homepage"
+        >
+          <ArrowLeft className="h-3.5 w-3.5 text-[#38bdf8]" />
+          <span>Home</span>
+        </button>
+
+        <div className="flex items-center gap-2">
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#00406c] border border-[#005a96] shadow-md">
+            <Video className="h-4 w-4 text-white" />
+          </div>
+          <span className="text-base font-bold tracking-tight text-white font-outfit">
+            Animo<span className="text-[#38bdf8]">Concepto</span>
+          </span>
         </div>
-        <span className="bg-gradient-to-r from-white to-brand-400 bg-clip-text text-xl font-bold tracking-tight text-transparent font-outfit">
-          AnimoConcepto
-        </span>
       </div>
 
       {/* New Animation Button */}
       <div className="p-4">
         <motion.button
-          whileHover={{ scale: 1.02, border: '1px solid rgba(139, 92, 246, 0.4)' }}
+          whileHover={{ scale: 1.02, border: '1px solid #005a96' }}
           whileTap={{ scale: 0.98 }}
           onClick={onCreate}
-          className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.02] py-3 text-sm font-semibold transition-all duration-300 hover:bg-white/[0.05]"
+          className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#002e4e] bg-[#00111c] py-3 text-sm font-semibold transition-all duration-300 hover:bg-[#002137]"
         >
-          <Plus className="h-4 w-4 text-brand-400" />
+          <Plus className="h-4 w-4 text-[#38bdf8]" />
           <span>New Video Chat</span>
         </motion.button>
       </div>
@@ -75,11 +89,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     onClick={() => onSelect(convo.id)}
                     className={`flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left text-sm transition-all duration-300 ${
                       isActive
-                        ? 'bg-gradient-to-r from-brand-600/30 to-indigo-500/10 border border-brand-500/30 text-white font-medium shadow-inner'
-                        : 'border border-transparent text-slate-400 hover:bg-white/[0.03] hover:text-white'
+                        ? 'bg-[#00253e] border border-[#00406c] text-white font-medium shadow-inner'
+                        : 'border border-transparent text-slate-400 hover:bg-[#002137] hover:text-white'
                     }`}
                   >
-                    <MessageSquare className={`h-4 w-4 shrink-0 ${isActive ? 'text-brand-400' : 'text-slate-500'}`} />
+                    <MessageSquare className={`h-4 w-4 shrink-0 ${isActive ? 'text-[#38bdf8]' : 'text-slate-500'}`} />
                     <span className="truncate pr-8">{convo.title}</span>
                   </button>
 
@@ -89,7 +103,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       e.stopPropagation();
                       onDelete(convo.id);
                     }}
-                    className="absolute top-1/2 right-3 h-7 w-7 -translate-y-1/2 items-center justify-center rounded-md border border-white/5 bg-[#17172a] text-slate-500 opacity-0 transition-all duration-300 hover:border-rose-500/40 hover:text-rose-400 hover:shadow-lg hover:shadow-rose-950/20 group-hover:opacity-100 flex"
+                    className="absolute top-1/2 right-3 h-7 w-7 -translate-y-1/2 items-center justify-center rounded-md border border-white/5 bg-[#00111c] text-slate-500 opacity-0 transition-all duration-300 hover:border-rose-500/40 hover:text-rose-400 hover:shadow-lg hover:shadow-rose-950/20 group-hover:opacity-100 flex"
                     title="Delete Conversation"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
@@ -102,13 +116,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* User Session Footer */}
-      <div className="border-t border-white/5 bg-black/10 p-4">
+      <div className="border-t border-[#002e4e] bg-[#00111c]/60 p-4">
         <button
           onClick={onLogout}
-          className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-slate-400 transition-colors duration-300 hover:bg-white/[0.03] hover:text-white"
+          className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-slate-400 transition-colors duration-300 hover:bg-[#00253e] hover:text-white"
         >
           <div className="flex items-center gap-3.5">
-            <div className="h-8 w-8 rounded-full bg-gradient-to-tr from-brand-700 to-indigo-600 flex items-center justify-center text-xs font-bold text-white uppercase">
+            <div className="h-8 w-8 rounded-full bg-[#00406c] border border-[#005a96] flex items-center justify-center text-xs font-bold text-white uppercase">
               U
             </div>
             <span className="text-xs font-semibold tracking-wide">User Account</span>

@@ -13,7 +13,7 @@ import re
 import sys
 
 from auth import hash_password, verify_password, create_access_token, decode_token
-from openrouter_wrapper import generate_manim_code
+from wrapper import generate_manim_code
 
 # Load environment variables
 load_dotenv()
@@ -149,11 +149,12 @@ async def generate(prompt: Prompt, user=Depends(get_user)):
     if not convo:
         raise HTTPException(404, "Conversation not found")
 
-    scenes_dir = os.path.abspath(f"scenes/{user_id}")
-    media_dir = os.path.abspath(f"media/{user_id}")
+    convo_id = str(prompt.conversation_id)
+    scenes_dir = os.path.abspath(f"scenes/{convo_id}")
+    media_dir = os.path.abspath(f"media/{convo_id}")
     os.makedirs(scenes_dir, exist_ok=True)
     os.makedirs(media_dir, exist_ok=True)
-
+    
     scene_filename = "scene.py"
     script_path = os.path.join(scenes_dir, scene_filename)
     scene_name = "GeneratedScene"
