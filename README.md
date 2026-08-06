@@ -11,34 +11,10 @@
 [![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
 [![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vite.dev/)
 [![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
 
 **Describe any mathematical concept in plain English. AnimoConcepto uses Google Gemini to generate Manim code and renders stunning explanatory animation videos — all through a conversational chat interface.**
 
 [Get Started](#-quick-start) · [Features](#-features) · [Architecture](#-system-architecture) · [Screenshots](#-screenshots) · [API Reference](#-api-endpoints) · [Roadmap](#-future-architecture--roadmap)
-
-</div>
-
----
-
-## 📸 Screenshots
-
-<div align="center">
-
-### Landing Page
-<img src="docs/screenshots/landing_hero.png" alt="AnimoConcepto Landing Page - Hero Section" width="90%">
-
-### Feature Highlights with Live Videos
-<img src="docs/screenshots/landing_features.png" alt="AnimoConcepto Features Grid with Live Video Previews" width="90%">
-
-### Real AI Video Showcase Gallery
-<img src="docs/screenshots/landing_gallery.png" alt="Real Videos Created with AnimoConcepto Showcase" width="90%">
-
-### How It Works
-<img src="docs/screenshots/landing_how_it_works.png" alt="How It Works - 3 Step Process" width="90%">
-
-### Authentication
-<img src="docs/screenshots/auth_screen.png" alt="AnimoConcepto Login Screen" width="90%">
 
 </div>
 
