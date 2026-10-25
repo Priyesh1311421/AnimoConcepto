@@ -11,6 +11,7 @@ import os
 import subprocess
 import re
 import sys
+from builtins import str
 
 from auth import hash_password, verify_password, create_access_token, decode_token
 from wrapper import generate_manim_code
@@ -60,12 +61,6 @@ def extract_code_block(llm_output: str) -> str:
 
 
 def _replace_tex_with_text(code: str) -> str:
-    """Replace manim Tex(...) with Text(...) to avoid requiring LaTeX.
-
-    This is a pragmatic fallback for environments without a TeX installation.
-    It does a simple token replacement and preserves the inner content.
-    """
-    # Replace class calls like Tex("..."), Tex(r"..."), Tex('...')
     return re.sub(r"\bTex\s*\(", "Text(", code)
 
 async def get_user(authorization: str = Header(...)):
@@ -89,11 +84,8 @@ async def register(email: str, password: str):
 
 @app.post("/login")
 async def login(email: str, password: str):
-    print(email)
-    print(password)
     user = await db.users.find_one({"email": email})
-    print(user["hashed_password"])
-    if not user or not verify_password(password, user["hashed_password"]):
+    if not user or not verify_password(password, user.get("hashed_password", "")):
         raise HTTPException(401, "Invalid credentials")
     token = create_access_token({"user_id": str(user["_id"])});
     return {"access_token": token}
