@@ -150,6 +150,8 @@ Create a `.env` file in the `frontend/` directory (optional):
 VITE_API_BASE_URL=http://localhost:8000
 ```
 
+Production builds use `frontend/.env.production`, which points to the deployed backend at `https://be.animoconcepto.site`. Vite includes this URL in the frontend build, so rebuild and redeploy the frontend after changing it.
+
 Start the development server:
 
 ```bash
@@ -272,11 +274,11 @@ AnimoConcepto/
 | `GEMINI_API_KEY` | ✅ | Google Gemini API key |
 | `GEMINI_MODEL` | ❌ | Model name (default: `gemini-2.0-flash`) |
 
-### Frontend (`frontend/.env`)
+### Frontend (`frontend/.env`, `frontend/.env.production`)
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `VITE_API_BASE_URL` | ❌ | Backend URL (default: `http://localhost:8000`) |
+| `VITE_API_BASE_URL` | ❌ | Backend URL. Local development uses `http://localhost:8000`; production builds use `https://be.animoconcepto.site`. |
 
 ---
 
