@@ -121,8 +121,9 @@ const AppWorkspace: React.FC<{
 
   // Handle incoming query param prompt (e.g. from LandingPage prompt box)
   useEffect(() => {
-    const incomingPrompt = searchParams.get('prompt');
+    const incomingPrompt = searchParams.get('prompt') || sessionStorage.getItem('pendingPrompt');
     if (incomingPrompt && isAuthenticated && !isGenerating) {
+      sessionStorage.removeItem('pendingPrompt');
       handleSendPrompt(incomingPrompt);
       const newParams = new URLSearchParams(searchParams);
       newParams.delete('prompt');

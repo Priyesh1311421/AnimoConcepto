@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { api } from '../utils/api';
 import {
   Video,
   Sparkles,
@@ -110,10 +111,19 @@ const STEPS = [
 
 /* ─── Stats row ─── */
 const STATS = [
-  { value: 'AI', label: 'Powered' },
   { value: '< 30s', label: 'Avg. Render Time' },
-  { value: 'MP4', label: 'Export Format' },
-  { value: '∞', label: 'Creative Possibilities' },
+  { value: '1080p', label: 'Crisp Video Quality' },
+  { value: 'MP4', label: 'Direct Video Export' },
+  { value: '0 Code', label: 'Plain English Prompts' },
+];
+
+/* ─── Quick topic chips ─── */
+const QUICK_TAGS = [
+  'Neural Networks',
+  'Fourier Series',
+  'Binary Search',
+  'Eigenvectors',
+  'Fibonacci Spiral',
 ];
 
 /* ─── Tech stack ─── */
@@ -197,6 +207,25 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
   const [promptValue, setPromptValue] = useState('');
   const [activePromptIdx, setActivePromptIdx] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const handleStartGenerating = (customPrompt?: string) => {
+    const text = (customPrompt ?? promptValue).trim() || EXAMPLE_PROMPTS[activePromptIdx];
+    if (text) {
+      sessionStorage.setItem('pendingPrompt', text);
+    }
+    if (api.getToken()) {
+      navigate(`/app?prompt=${encodeURIComponent(text)}`);
+    } else {
+      navigate('/auth');
+    }
+  };
+
+  const handleOpenApp = () => {
+    if (onGetStarted) {
+      onGetStarted();
+    }
+    navigate(api.getToken() ? '/app' : '/auth');
+  };
 
   // Cycle example prompts
   React.useEffect(() => {
@@ -362,86 +391,187 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
       </AnimatePresence>
 
       {/* ═══════════ HERO SECTION ═══════════ */}
-      <section className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 pt-12 sm:pt-16 pb-20 sm:pb-24 lg:px-12 md:pt-24 md:pb-32">
-        <div className="max-w-3xl text-left">
-          {/* Main Headline */}
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7 }}
-            className="text-4xl sm:text-6xl md:text-7xl lg:text-[5.5rem] font-extrabold leading-[1.1] sm:leading-[1.05] tracking-tight font-outfit text-white break-words"
-          >
-            Animation
-            <br />
-            generation at
-            <br />
-            <span className="bg-gradient-to-r from-white via-sky-200 to-[#38bdf8] bg-clip-text text-transparent">
-              your fingertips
-            </span>
-          </motion.h1>
-
-          {/* Subtitle */}
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.15 }}
-            className="mt-6 sm:mt-8 max-w-2xl text-base sm:text-lg md:text-xl leading-relaxed text-slate-300 font-normal"
-          >
-            Create breathtaking animations with AI that understands your vision.
-            No design skills needed—just describe what you imagine and
-            watch it come to life.
-          </motion.p>
-
-          {/* Action CTAs */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.3 }}
-            className="mt-8 sm:mt-10 flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 sm:gap-6"
-          >
-            <motion.button
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.97 }}
-              onClick={() => navigate('/auth')}
-              className="flex items-center justify-center gap-2.5 rounded-xl bg-[#00406c] hover:bg-[#005a96] border border-[#005a96] px-6 sm:px-8 py-3.5 sm:py-4 text-sm sm:text-base font-bold text-white shadow-xl shadow-[#00406c]/40 transition-all text-center"
+      <section className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 pt-8 sm:pt-14 pb-16 sm:pb-24 lg:px-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
+          {/* Left Column: Headlines & Actions */}
+          <div className="lg:col-span-7 text-left">
+            {/* Top Badge */}
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="inline-flex items-center gap-2 rounded-full border border-[#00406c] bg-[#001a2c]/90 px-3.5 py-1.5 text-[11px] sm:text-xs font-semibold text-[#38bdf8] backdrop-blur-md mb-5 shadow-lg shadow-[#00406c]/20"
             >
-              <Grid className="h-4.5 w-4.5 text-[#38bdf8]" />
-              <span>Try for free</span>
-            </motion.button>
+              <Sparkles className="h-3.5 w-3.5 text-[#38bdf8]" />
+              <span>AI Mathematical & Conceptual Animation Studio</span>
+            </motion.div>
 
-            <Link
-              to="/docs"
-              className="flex items-center justify-center sm:justify-start gap-2 text-sm sm:text-base font-semibold text-slate-300 hover:text-white transition-colors group py-2"
+            {/* Main Headline */}
+            <motion.h1
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="text-3xl sm:text-5xl lg:text-[3.25rem] xl:text-[3.6rem] font-extrabold leading-[1.12] sm:leading-[1.1] tracking-tight font-outfit text-white"
             >
-              <span>Read Documentation</span>
-              <span className="group-hover:translate-x-1 transition-transform">→</span>
-            </Link>
-          </motion.div>
+              Animation generation at{' '}
+              <span className="bg-gradient-to-r from-white via-sky-200 to-[#38bdf8] bg-clip-text text-transparent">
+                your fingertips
+              </span>
+            </motion.h1>
 
-          {/* Interactive Prompt Box */}
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.45 }}
-            className="mt-10 sm:mt-14 max-w-xl w-full"
-          >
-            <div className="relative flex items-center rounded-2xl border border-[#002e4e] bg-[#001a2c]/90 p-1.5 sm:p-2 backdrop-blur-md shadow-2xl">
-              <input
-                type="text"
-                value={promptValue}
-                onChange={(e) => setPromptValue(e.target.value)}
-                placeholder={EXAMPLE_PROMPTS[activePromptIdx]}
-                className="flex-1 bg-transparent px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-white placeholder-slate-500 outline-none font-medium min-w-0"
-              />
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={onGetStarted}
-                className="flex items-center gap-1.5 sm:gap-2 rounded-xl bg-[#00406c] hover:bg-[#005a96] border border-[#005a96] px-3.5 sm:px-5 py-2 sm:py-3 text-xs sm:text-sm font-bold text-white transition-colors shrink-0"
+            {/* Subtitle */}
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="mt-4 sm:mt-5 max-w-xl text-sm sm:text-base md:text-lg leading-relaxed text-slate-300 font-normal"
+            >
+              Create breathtaking educational animations with AI that understands your vision. Describe mathematical concepts, algorithms, or theories and watch them render in seconds.
+            </motion.p>
+
+            {/* Interactive Prompt Box */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="mt-6 sm:mt-8 max-w-xl w-full"
+            >
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleStartGenerating();
+                }}
+                className="relative flex items-center rounded-2xl border border-[#00406c] bg-[#001a2c]/95 p-1.5 sm:p-2 backdrop-blur-md shadow-2xl focus-within:border-[#38bdf8]/60 focus-within:ring-2 focus-within:ring-[#38bdf8]/20 transition-all"
               >
-                <span>Generate</span>
-                <Sparkles className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-[#38bdf8]" />
+                <input
+                  type="text"
+                  value={promptValue}
+                  onChange={(e) => setPromptValue(e.target.value)}
+                  placeholder={EXAMPLE_PROMPTS[activePromptIdx]}
+                  className="flex-1 bg-transparent px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm text-white placeholder-slate-500 outline-none font-medium min-w-0"
+                />
+                <motion.button
+                  whileHover={{ scale: 1.04 }}
+                  whileTap={{ scale: 0.96 }}
+                  type="submit"
+                  className="flex items-center gap-1.5 sm:gap-2 rounded-xl bg-[#00406c] hover:bg-[#005a96] border border-[#005a96] px-4 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-bold text-white transition-all shrink-0 shadow-lg shadow-[#00406c]/30"
+                >
+                  <span>Generate</span>
+                  <Sparkles className="h-3.5 w-3.5 text-[#38bdf8]" />
+                </motion.button>
+              </form>
+
+              {/* Quick topic chips */}
+              <div className="mt-3 flex flex-wrap items-center gap-1.5 text-[11px] text-slate-400">
+                <span className="font-semibold text-slate-500 mr-0.5">Try:</span>
+                {QUICK_TAGS.map((tag) => (
+                  <button
+                    key={tag}
+                    type="button"
+                    onClick={() => {
+                      const p = `Create a video explaining ${tag}`;
+                      setPromptValue(p);
+                      handleStartGenerating(p);
+                    }}
+                    className="rounded-lg border border-[#002e4e] bg-[#001424] px-2.5 py-1 text-slate-300 hover:text-white hover:border-[#00406c] hover:bg-[#00253e] transition-colors"
+                  >
+                    {tag}
+                  </button>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* Action CTAs */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="mt-6 sm:mt-8 flex flex-wrap items-center gap-3.5 sm:gap-5"
+            >
+              <motion.button
+                whileHover={{ scale: 1.04 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={handleOpenApp}
+                className="flex items-center justify-center gap-2 rounded-xl bg-[#00406c] hover:bg-[#005a96] border border-[#005a96] px-6 py-3 text-xs sm:text-sm font-bold text-white shadow-xl shadow-[#00406c]/40 transition-all text-center"
+              >
+                <Grid className="h-4 w-4 text-[#38bdf8]" />
+                <span>Launch Animation Studio</span>
               </motion.button>
+
+              <Link
+                to="/docs"
+                className="flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-slate-300 hover:text-white transition-colors group py-2"
+              >
+                <span>Read Documentation</span>
+                <span className="group-hover:translate-x-1 transition-transform">→</span>
+              </Link>
+            </motion.div>
+          </div>
+
+          {/* Right Column: Interactive Live Video Showcase */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.7, delay: 0.2 }}
+            className="lg:col-span-5 flex justify-center mt-6 lg:mt-0"
+          >
+            <div className="relative w-full max-w-md sm:max-w-lg">
+              {/* Backlight Ambient Glow */}
+              <div className="absolute -inset-1.5 rounded-2xl bg-gradient-to-r from-[#005a96]/40 via-[#38bdf8]/20 to-purple-600/30 blur-xl opacity-75 pointer-events-none" />
+
+              {/* Showcase Frame */}
+              <div className="relative rounded-2xl border border-[#00406c] bg-[#00111c] overflow-hidden shadow-2xl">
+                {/* Header Window Bar */}
+                <div className="flex items-center justify-between border-b border-[#002e4e] bg-[#001a2c]/90 px-3.5 py-2.5">
+                  <div className="flex items-center gap-1.5">
+                    <div className="h-2.5 w-2.5 rounded-full bg-rose-500/80" />
+                    <div className="h-2.5 w-2.5 rounded-full bg-amber-500/80" />
+                    <div className="h-2.5 w-2.5 rounded-full bg-emerald-500/80" />
+                  </div>
+                  <div className="flex items-center gap-1.5 text-[10px] font-mono text-slate-300">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    <span>Live AI Animation Preview</span>
+                  </div>
+                  <div className="text-[10px] text-slate-400 font-mono">1080p · 60fps</div>
+                </div>
+
+                {/* Video Container */}
+                <div className="aspect-video w-full bg-black relative">
+                  <video
+                    src="/demo_videos/demo1.mp4"
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="h-full w-full object-contain"
+                  />
+                  <div className="absolute bottom-2.5 left-2.5 right-2.5 flex items-center justify-between rounded-xl bg-black/65 backdrop-blur-md px-3 py-1.5 border border-white/10 text-white text-[11px]">
+                    <span className="font-medium text-slate-200 truncate max-w-[200px]">Merge Sort Algorithm</span>
+                    <span className="text-[#38bdf8] font-mono font-semibold">Rendered in 24s</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Floating Accent Badges */}
+              <div className="hidden sm:flex absolute -bottom-3 -left-3 items-center gap-2 rounded-xl border border-[#00406c] bg-[#001a2c]/95 px-3 py-1.5 shadow-xl backdrop-blur-md">
+                <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-sky-500/20 text-[#38bdf8]">
+                  <Zap className="h-3.5 w-3.5" />
+                </div>
+                <div className="text-left">
+                  <p className="text-[9px] text-slate-400">Rendering Engine</p>
+                  <p className="text-xs font-bold text-white">Zero Code Required</p>
+                </div>
+              </div>
+
+              <div className="hidden sm:flex absolute -top-3 -right-3 items-center gap-2 rounded-xl border border-[#00406c] bg-[#001a2c]/95 px-3 py-1.5 shadow-xl backdrop-blur-md">
+                <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-emerald-500/20 text-emerald-400">
+                  <Sparkles className="h-3.5 w-3.5" />
+                </div>
+                <div className="text-left">
+                  <p className="text-[9px] text-slate-400">Educational Pacing</p>
+                  <p className="text-xs font-bold text-white">Pedagogical Flow</p>
+                </div>
+              </div>
             </div>
           </motion.div>
         </div>
@@ -510,7 +640,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
                 <motion.button
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
-                  onClick={onGetStarted}
+                  onClick={handleOpenApp}
                   className="mt-3 sm:mt-4 inline-flex items-center gap-2 rounded-full border border-[#002e4e] bg-[#001a2c] px-5 sm:px-6 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold text-[#38bdf8] transition-all hover:bg-[#00253e] hover:border-[#00406c]"
                 >
                   <span>Create now</span>
@@ -663,7 +793,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
               <motion.button
                 whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 0.97 }}
-                onClick={onGetStarted}
+                onClick={handleOpenApp}
                 className="rounded-full bg-[#00406c] border border-[#005a96] px-8 sm:px-10 py-3.5 sm:py-4 text-sm sm:text-base font-bold shadow-xl shadow-[#00406c]/40 transition-all hover:bg-[#005a96]"
               >
                 Create now — It's free
