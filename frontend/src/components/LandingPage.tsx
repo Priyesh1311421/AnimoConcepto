@@ -16,6 +16,8 @@ import {
   Download,
   Wand2,
   Grid,
+  Menu,
+  X,
 } from 'lucide-react';
 
 /* ─── Inline GitHub SVG ─── */
@@ -161,9 +163,9 @@ const FaqItem: React.FC<{ item: (typeof FAQ)[0]; idx: number }> = ({ item, idx }
     >
       <button
         onClick={() => setOpen(!open)}
-        className="flex w-full items-center justify-between py-6 text-left group"
+        className="flex w-full items-center justify-between py-5 sm:py-6 text-left group"
       >
-        <span className="text-base font-semibold text-slate-200 pr-8 group-hover:text-white transition-colors">
+        <span className="text-sm sm:text-base font-semibold text-slate-200 pr-6 group-hover:text-white transition-colors">
           {item.q}
         </span>
         <ChevronDown
@@ -179,7 +181,7 @@ const FaqItem: React.FC<{ item: (typeof FAQ)[0]; idx: number }> = ({ item, idx }
             transition={{ duration: 0.3 }}
             className="overflow-hidden"
           >
-            <p className="pb-6 text-sm leading-relaxed text-slate-400">{item.a}</p>
+            <p className="pb-5 sm:pb-6 text-xs sm:text-sm leading-relaxed text-slate-400">{item.a}</p>
           </motion.div>
         )}
       </AnimatePresence>
@@ -194,6 +196,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
   const navigate = useNavigate();
   const [promptValue, setPromptValue] = useState('');
   const [activePromptIdx, setActivePromptIdx] = useState(0);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Cycle example prompts
   React.useEffect(() => {
@@ -206,16 +209,16 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-[#020813] text-white selection:bg-[#38bdf8]/30">
       {/* ─── Cosmic Starry Space Background Canvas ─── */}
-      <div className="pointer-events-none absolute top-0 left-0 right-0 h-[850px] overflow-hidden">
+      <div className="pointer-events-none absolute top-0 left-0 right-0 h-[750px] sm:h-[850px] overflow-hidden">
         {/* Deep starry space gradient */}
         <div className="absolute inset-0 bg-gradient-to-b from-[#010610] via-[#00172e] to-[#020813]" />
 
         {/* Nebulae flares & galaxy ambient glows */}
-        <div className="absolute top-[-100px] left-1/2 -translate-x-1/2 h-[700px] w-[1000px] rounded-full bg-gradient-to-r from-blue-600/20 via-indigo-600/15 to-purple-600/10 blur-[160px]" />
-        <div className="absolute top-[200px] right-[-100px] h-[500px] w-[500px] rounded-full bg-amber-500/10 blur-[180px]" />
+        <div className="absolute top-[-100px] left-1/2 -translate-x-1/2 h-[500px] sm:h-[700px] w-[600px] sm:w-[1000px] rounded-full bg-gradient-to-r from-blue-600/20 via-indigo-600/15 to-purple-600/10 blur-[120px] sm:blur-[160px]" />
+        <div className="absolute top-[200px] right-[-100px] h-[350px] sm:h-[500px] w-[350px] sm:w-[500px] rounded-full bg-amber-500/10 blur-[140px] sm:blur-[180px]" />
 
         {/* Rocket fiery trajectory light trail across night sky */}
-        <div className="absolute top-[80px] right-[-50px] w-[600px] h-[350px] pointer-events-none opacity-80">
+        <div className="absolute top-[80px] right-[-50px] w-[400px] sm:w-[600px] h-[250px] sm:h-[350px] pointer-events-none opacity-80">
           <div className="w-full h-full bg-gradient-to-tr from-amber-500/0 via-amber-500/20 to-white/60 blur-[30px] rotate-[-25deg] transform translate-y-12" />
         </div>
 
@@ -228,19 +231,19 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
         initial={{ opacity: 0, y: -16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="relative z-30 mx-auto flex max-w-7xl items-center justify-between px-6 py-5 lg:px-10"
+        className="relative z-30 mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 py-4 sm:py-5 lg:px-10"
       >
         {/* Left: Brand Logo */}
-        <Link to="/" className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#00406c] border border-[#005a96] shadow-lg shadow-[#00406c]/30">
-            <Video className="h-5 w-5 text-white" />
+        <Link to="/" className="flex items-center gap-2.5 sm:gap-3">
+          <div className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl bg-[#00406c] border border-[#005a96] shadow-lg shadow-[#00406c]/30">
+            <Video className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
           </div>
-          <span className="text-xl font-extrabold tracking-tight font-outfit text-white">
+          <span className="text-lg sm:text-xl font-extrabold tracking-tight font-outfit text-white">
             Animo<span className="text-[#38bdf8]">Concepto</span>
           </span>
         </Link>
 
-        {/* Center: MPA Nav Links */}
+        {/* Center: Desktop MPA Nav Links */}
         <div className="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-300">
           <Link to="/features" className="hover:text-white transition-colors">
             Features
@@ -256,8 +259,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
           </Link>
         </div>
 
-        {/* Right: GitHub, Login & Sign Up */}
-        <div className="flex items-center gap-4">
+        {/* Right: Actions & Mobile Hamburger */}
+        <div className="flex items-center gap-2 sm:gap-4">
           <a
             href="https://github.com/Priyesh1311421/AnimoConcepto"
             target="_blank"
@@ -269,7 +272,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
           </a>
           <button
             onClick={() => navigate('/auth')}
-            className="rounded-full border border-[#002e4e] bg-[#001a2c] px-5 py-2 text-sm font-semibold text-slate-300 transition-all hover:bg-[#00253e] hover:text-white"
+            className="hidden xs:inline-flex rounded-full border border-[#002e4e] bg-[#001a2c] px-4 sm:px-5 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold text-slate-300 transition-all hover:bg-[#00253e] hover:text-white"
           >
             Login
           </button>
@@ -277,28 +280,104 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
             onClick={() => navigate('/auth')}
-            className="rounded-full bg-[#00406c] border border-[#005a96] px-6 py-2 text-sm font-bold shadow-lg shadow-[#00406c]/30 transition-all hover:bg-[#005a96]"
+            className="rounded-full bg-[#00406c] border border-[#005a96] px-4 sm:px-6 py-1.5 sm:py-2 text-xs sm:text-sm font-bold shadow-lg shadow-[#00406c]/30 transition-all hover:bg-[#005a96]"
           >
             Sign up free
           </motion.button>
+
+          {/* Mobile Menu Toggle Button */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="flex md:hidden h-9 w-9 items-center justify-center rounded-lg border border-[#002e4e] bg-[#001a2c] text-slate-300 hover:text-white transition-colors"
+            title="Toggle Menu"
+            aria-label="Toggle navigation menu"
+          >
+            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
         </div>
       </motion.nav>
 
-      {/* ═══════════ HERO SECTION (Saasternity style) ═══════════ */}
-      <section className="relative z-10 mx-auto max-w-7xl px-6 pt-16 pb-24 lg:px-12 md:pt-24 md:pb-32">
+      {/* ─── Mobile Navigation Drawer Overlay ─── */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.25 }}
+            className="relative z-30 border-b border-[#002e4e] bg-[#001424]/95 backdrop-blur-xl px-6 py-6 md:hidden overflow-hidden"
+          >
+            <div className="flex flex-col gap-4">
+              <Link
+                to="/features"
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-base font-semibold text-slate-200 hover:text-[#38bdf8] transition-colors py-1"
+              >
+                Features
+              </Link>
+              <Link
+                to="/pricing"
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-base font-semibold text-slate-200 hover:text-[#38bdf8] transition-colors py-1"
+              >
+                Pricing
+              </Link>
+              <Link
+                to="/blog"
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-base font-semibold text-slate-200 hover:text-[#38bdf8] transition-colors py-1"
+              >
+                Blog
+              </Link>
+              <Link
+                to="/docs"
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-base font-semibold text-slate-200 hover:text-[#38bdf8] transition-colors py-1"
+              >
+                Docs
+              </Link>
+              <div className="pt-3 border-t border-[#002e4e] flex items-center justify-between">
+                <a
+                  href="https://github.com/Priyesh1311421/AnimoConcepto"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-sm font-semibold text-slate-300 hover:text-white"
+                >
+                  <GithubIcon className="h-4 w-4" />
+                  <span>GitHub</span>
+                </a>
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    navigate('/auth');
+                  }}
+                  className="rounded-full border border-[#002e4e] bg-[#001a2c] px-4 py-1.5 text-xs font-semibold text-slate-300"
+                >
+                  Login
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ═══════════ HERO SECTION ═══════════ */}
+      <section className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 pt-12 sm:pt-16 pb-20 sm:pb-24 lg:px-12 md:pt-24 md:pb-32">
         <div className="max-w-3xl text-left">
           {/* Main Headline */}
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7 }}
-            className="text-6xl font-extrabold leading-[1.05] tracking-tight sm:text-7xl md:text-[5.5rem] font-outfit text-white"
+            className="text-4xl sm:text-6xl md:text-7xl lg:text-[5.5rem] font-extrabold leading-[1.1] sm:leading-[1.05] tracking-tight font-outfit text-white break-words"
           >
             Animation
             <br />
             generation at
             <br />
-            your fingertips
+            <span className="bg-gradient-to-r from-white via-sky-200 to-[#38bdf8] bg-clip-text text-transparent">
+              your fingertips
+            </span>
           </motion.h1>
 
           {/* Subtitle */}
@@ -306,7 +385,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.15 }}
-            className="mt-8 max-w-2xl text-lg leading-relaxed text-slate-300 md:text-xl font-normal"
+            className="mt-6 sm:mt-8 max-w-2xl text-base sm:text-lg md:text-xl leading-relaxed text-slate-300 font-normal"
           >
             Create breathtaking animations with AI that understands your vision.
             No design skills needed—just describe what you imagine and
@@ -318,13 +397,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.3 }}
-            className="mt-10 flex flex-wrap items-center gap-6"
+            className="mt-8 sm:mt-10 flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 sm:gap-6"
           >
             <motion.button
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.97 }}
               onClick={() => navigate('/auth')}
-              className="flex items-center gap-2.5 rounded-xl bg-[#00406c] hover:bg-[#005a96] border border-[#005a96] px-8 py-4 text-base font-bold text-white shadow-xl shadow-[#00406c]/40 transition-all"
+              className="flex items-center justify-center gap-2.5 rounded-xl bg-[#00406c] hover:bg-[#005a96] border border-[#005a96] px-6 sm:px-8 py-3.5 sm:py-4 text-sm sm:text-base font-bold text-white shadow-xl shadow-[#00406c]/40 transition-all text-center"
             >
               <Grid className="h-4.5 w-4.5 text-[#38bdf8]" />
               <span>Try for free</span>
@@ -332,7 +411,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
 
             <Link
               to="/docs"
-              className="flex items-center gap-2 text-base font-semibold text-slate-300 hover:text-white transition-colors group"
+              className="flex items-center justify-center sm:justify-start gap-2 text-sm sm:text-base font-semibold text-slate-300 hover:text-white transition-colors group py-2"
             >
               <span>Read Documentation</span>
               <span className="group-hover:translate-x-1 transition-transform">→</span>
@@ -344,24 +423,24 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.45 }}
-            className="mt-14 max-w-xl"
+            className="mt-10 sm:mt-14 max-w-xl w-full"
           >
-            <div className="relative flex items-center rounded-2xl border border-[#002e4e] bg-[#001a2c]/90 p-2 backdrop-blur-md shadow-2xl">
+            <div className="relative flex items-center rounded-2xl border border-[#002e4e] bg-[#001a2c]/90 p-1.5 sm:p-2 backdrop-blur-md shadow-2xl">
               <input
                 type="text"
                 value={promptValue}
                 onChange={(e) => setPromptValue(e.target.value)}
                 placeholder={EXAMPLE_PROMPTS[activePromptIdx]}
-                className="flex-1 bg-transparent px-4 py-3 text-sm text-white placeholder-slate-500 outline-none font-medium"
+                className="flex-1 bg-transparent px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-white placeholder-slate-500 outline-none font-medium min-w-0"
               />
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={onGetStarted}
-                className="flex items-center gap-2 rounded-xl bg-[#00406c] hover:bg-[#005a96] border border-[#005a96] px-5 py-3 text-sm font-bold text-white transition-colors"
+                className="flex items-center gap-1.5 sm:gap-2 rounded-xl bg-[#00406c] hover:bg-[#005a96] border border-[#005a96] px-3.5 sm:px-5 py-2 sm:py-3 text-xs sm:text-sm font-bold text-white transition-colors shrink-0"
               >
                 <span>Generate</span>
-                <Sparkles className="h-4 w-4 text-[#38bdf8]" />
+                <Sparkles className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-[#38bdf8]" />
               </motion.button>
             </div>
           </motion.div>
@@ -370,7 +449,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
 
       {/* ═══════════ STATS ROW ═══════════ */}
       <section className="relative z-10 border-y border-[#002e4e] bg-[#001a2c]/40">
-        <div className="mx-auto grid max-w-5xl grid-cols-2 md:grid-cols-4 divide-x divide-[#002e4e]">
+        <div className="mx-auto grid max-w-5xl grid-cols-2 md:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x border-[#002e4e]">
           {STATS.map((stat, idx) => (
             <motion.div
               key={idx}
@@ -378,12 +457,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: idx * 0.1 }}
-              className="flex flex-col items-center py-10 px-4"
+              className="flex flex-col items-center py-6 sm:py-10 px-3 sm:px-4"
             >
-              <span className="text-3xl font-extrabold tracking-tight font-outfit md:text-4xl text-white">
+              <span className="text-2xl sm:text-3xl font-extrabold tracking-tight font-outfit md:text-4xl text-white">
                 {stat.value}
               </span>
-              <span className="mt-1.5 text-xs font-semibold uppercase tracking-widest text-slate-400">
+              <span className="mt-1 sm:mt-1.5 text-[10px] sm:text-xs font-semibold uppercase tracking-widest text-slate-400 text-center">
                 {stat.label}
               </span>
             </motion.div>
@@ -392,7 +471,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
       </section>
 
       {/* ═══════════ FEATURE SECTIONS (alternating) ═══════════ */}
-      <section className="relative z-10 mx-auto max-w-6xl px-6 py-24 lg:px-10 space-y-32">
+      <section className="relative z-10 mx-auto max-w-6xl px-4 sm:px-6 py-16 sm:py-24 lg:px-10 space-y-16 sm:space-y-24 md:space-y-32">
         {FEATURES.map((feat, idx) => {
           const isReversed = idx % 2 !== 0;
           return (
@@ -400,31 +479,29 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
               key={idx}
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-80px' }}
+              viewport={{ once: true, margin: '-60px' }}
               transition={{ duration: 0.6 }}
-              className={`flex flex-col gap-12 lg:flex-row lg:items-center ${isReversed ? 'lg:flex-row-reverse' : ''}`}
+              className={`flex flex-col gap-8 sm:gap-12 lg:flex-row lg:items-center ${isReversed ? 'lg:flex-row-reverse' : ''}`}
             >
               {/* Text side */}
-              <div className="flex-1 space-y-5">
+              <div className="flex-1 space-y-4 sm:space-y-5">
                 <div className="flex items-center gap-3">
-                  <div
-                    className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#00253e] border border-[#002e4e] shadow-lg"
-                  >
-                    <feat.icon className="h-5 w-5 text-[#38bdf8]" />
+                  <div className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-[#00253e] border border-[#002e4e] shadow-lg shrink-0">
+                    <feat.icon className="h-4.5 w-4.5 sm:h-5 sm:w-5 text-[#38bdf8]" />
                   </div>
-                  <span className="text-xs font-bold uppercase tracking-widest text-slate-400">
+                  <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-slate-400">
                     {feat.subtitle}
                   </span>
                 </div>
-                <h2 className="text-3xl font-extrabold tracking-tight font-outfit md:text-4xl lg:text-[2.75rem] leading-tight">
+                <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight font-outfit md:text-4xl lg:text-[2.75rem] leading-tight">
                   {feat.title}
                 </h2>
-                <p className="text-base leading-relaxed text-slate-400 max-w-lg">
+                <p className="text-sm sm:text-base leading-relaxed text-slate-400 max-w-lg">
                   {feat.description}
                 </p>
-                <ul className="space-y-2.5 pt-2">
+                <ul className="space-y-2 sm:space-y-2.5 pt-1 sm:pt-2">
                   {feat.bullets.map((bullet, bi) => (
-                    <li key={bi} className="flex items-center gap-2.5 text-sm text-slate-300">
+                    <li key={bi} className="flex items-center gap-2.5 text-xs sm:text-sm text-slate-300">
                       <div className="h-1.5 w-1.5 rounded-full bg-[#38bdf8] shrink-0" />
                       {bullet}
                     </li>
@@ -434,7 +511,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
                   onClick={onGetStarted}
-                  className="mt-4 inline-flex items-center gap-2 rounded-full border border-[#002e4e] bg-[#001a2c] px-6 py-2.5 text-sm font-semibold text-[#38bdf8] transition-all hover:bg-[#00253e] hover:border-[#00406c]"
+                  className="mt-3 sm:mt-4 inline-flex items-center gap-2 rounded-full border border-[#002e4e] bg-[#001a2c] px-5 sm:px-6 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold text-[#38bdf8] transition-all hover:bg-[#00253e] hover:border-[#00406c]"
                 >
                   <span>Create now</span>
                   <ArrowRight className="h-3.5 w-3.5" />
@@ -442,7 +519,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
               </div>
 
               {/* Visual side — real video preview card */}
-              <div className="flex-1 flex justify-center">
+              <div className="flex-1 flex justify-center w-full">
                 <div className="relative w-full max-w-md aspect-video rounded-2xl border border-[#002e4e] bg-[#001a2c] shadow-2xl shadow-black/60 overflow-hidden group">
                   <video
                     src={feat.videoSrc}
@@ -452,8 +529,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
                     playsInline
                     className="h-full w-full object-contain bg-black"
                   />
-                  <div className="absolute top-3 left-3 flex items-center gap-2 rounded-full border border-[#002e4e] bg-[#00111c]/80 px-3 py-1 text-[10px] font-bold text-[#38bdf8] backdrop-blur-md">
-                    <Play className="h-3 w-3 fill-[#38bdf8]" />
+                  <div className="absolute top-2.5 left-2.5 sm:top-3 sm:left-3 flex items-center gap-1.5 sm:gap-2 rounded-full border border-[#002e4e] bg-[#00111c]/80 px-2.5 sm:px-3 py-1 text-[9px] sm:text-[10px] font-bold text-[#38bdf8] backdrop-blur-md">
+                    <Play className="h-2.5 w-2.5 sm:h-3 sm:w-3 fill-[#38bdf8]" />
                     <span>Live AI Video Preview</span>
                   </div>
                 </div>
@@ -464,23 +541,23 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
       </section>
 
       {/* ═══════════ HOW IT WORKS ═══════════ */}
-      <section className="relative z-10 border-y border-[#002e4e] bg-[#001a2c]/30 py-24">
-        <div className="mx-auto max-w-6xl px-6 lg:px-10">
+      <section className="relative z-10 border-y border-[#002e4e] bg-[#001a2c]/30 py-16 sm:py-24">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-10">
           <motion.div
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            className="text-center mb-16"
+            className="text-center mb-12 sm:mb-16"
           >
-            <h2 className="text-3xl font-extrabold tracking-tight font-outfit md:text-5xl">
+            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight font-outfit md:text-5xl">
               How it works
             </h2>
-            <p className="mt-4 text-slate-400 text-base max-w-lg mx-auto">
+            <p className="mt-3 sm:mt-4 text-slate-400 text-sm sm:text-base max-w-lg mx-auto">
               Three simple steps from idea to animation video.
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
             {STEPS.map((step, idx) => (
               <motion.div
                 key={idx}
@@ -489,18 +566,18 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: idx * 0.12 }}
                 whileHover={{ y: -6 }}
-                className="group relative rounded-2xl border border-[#002e4e] bg-[#001a2c] p-8 transition-all duration-300 hover:border-[#00406c] hover:bg-[#002137]"
+                className="group relative rounded-2xl border border-[#002e4e] bg-[#001a2c] p-6 sm:p-8 transition-all duration-300 hover:border-[#00406c] hover:bg-[#002137]"
               >
-                <div className="flex items-center justify-between mb-6">
-                  <span className="text-4xl font-extrabold text-white/[0.1] font-outfit group-hover:text-[#38bdf8]/30 transition-colors">
+                <div className="flex items-center justify-between mb-5 sm:mb-6">
+                  <span className="text-3xl sm:text-4xl font-extrabold text-white/[0.1] font-outfit group-hover:text-[#38bdf8]/30 transition-colors">
                     {step.num}
                   </span>
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#00253e] border border-[#002e4e] group-hover:border-[#00406c] transition-all">
-                    <step.icon className="h-5 w-5 text-slate-400 group-hover:text-[#38bdf8] transition-colors" />
+                  <div className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-[#00253e] border border-[#002e4e] group-hover:border-[#00406c] transition-all">
+                    <step.icon className="h-4.5 w-4.5 sm:h-5 sm:w-5 text-slate-400 group-hover:text-[#38bdf8] transition-colors" />
                   </div>
                 </div>
-                <h3 className="text-lg font-bold text-white font-outfit">{step.title}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-slate-400">{step.desc}</p>
+                <h3 className="text-base sm:text-lg font-bold text-white font-outfit">{step.title}</h3>
+                <p className="mt-2 sm:mt-3 text-xs sm:text-sm leading-relaxed text-slate-400">{step.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -508,19 +585,19 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
       </section>
 
       {/* ═══════════ TECH STACK ═══════════ */}
-      <section className="relative z-10 mx-auto max-w-5xl px-6 py-24 lg:px-10">
+      <section className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 py-16 sm:py-24 lg:px-10">
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          className="text-center mb-14"
+          className="text-center mb-10 sm:mb-14"
         >
-          <h2 className="text-3xl font-extrabold tracking-tight font-outfit md:text-4xl">
+          <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight font-outfit md:text-4xl">
             Built with modern tools
           </h2>
         </motion.div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 sm:gap-4">
           {TECH.map((tech, idx) => (
             <motion.div
               key={idx}
@@ -529,11 +606,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: idx * 0.05 }}
               whileHover={{ y: -4 }}
-              className="flex flex-col items-center gap-3 rounded-xl border border-[#002e4e] bg-[#001a2c] p-6 transition-all hover:border-[#00406c] hover:bg-[#002137]"
+              className="flex flex-col items-center gap-2 sm:gap-3 rounded-xl border border-[#002e4e] bg-[#001a2c] p-4 sm:p-6 transition-all hover:border-[#00406c] hover:bg-[#002137]"
             >
-              <tech.icon className="h-6 w-6 text-[#38bdf8]" />
-              <span className="text-sm font-bold text-white font-outfit">{tech.name}</span>
-              <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-400">
+              <tech.icon className="h-5 w-5 sm:h-6 sm:w-6 text-[#38bdf8]" />
+              <span className="text-xs sm:text-sm font-bold text-white font-outfit text-center">{tech.name}</span>
+              <span className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-widest text-slate-400 text-center">
                 {tech.desc}
               </span>
             </motion.div>
@@ -542,15 +619,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
       </section>
 
       {/* ═══════════ FAQ ACCORDION ═══════════ */}
-      <section className="relative z-10 border-t border-[#002e4e] bg-[#001a2c]/20 py-24">
-        <div className="mx-auto max-w-3xl px-6 lg:px-10">
+      <section className="relative z-10 border-t border-[#002e4e] bg-[#001a2c]/20 py-16 sm:py-24">
+        <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-10">
           <motion.div
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            className="text-center mb-14"
+            className="text-center mb-10 sm:mb-14"
           >
-            <h2 className="text-3xl font-extrabold tracking-tight font-outfit md:text-4xl">
+            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight font-outfit md:text-4xl">
               Frequently asked questions
             </h2>
           </motion.div>
@@ -564,8 +641,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
       </section>
 
       {/* ═══════════ BOTTOM CTA ═══════════ */}
-      <section className="relative z-10 py-24 px-6">
-        <div className="relative mx-auto max-w-4xl overflow-hidden rounded-3xl border border-[#002e4e] bg-gradient-to-br from-[#00253e] to-[#00111c] p-14 text-center md:p-20 shadow-2xl">
+      <section className="relative z-10 py-16 sm:py-24 px-4 sm:px-6">
+        <div className="relative mx-auto max-w-4xl overflow-hidden rounded-3xl border border-[#002e4e] bg-gradient-to-br from-[#00253e] to-[#00111c] p-8 sm:p-14 md:p-20 text-center shadow-2xl">
           <div className="pointer-events-none absolute top-0 right-0 h-60 w-60 rounded-full bg-[#00406c]/30 blur-[100px]" />
           <div className="pointer-events-none absolute bottom-0 left-0 h-60 w-60 rounded-full bg-[#002e4e]/30 blur-[100px]" />
 
@@ -574,20 +651,20 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-3xl font-extrabold tracking-tight font-outfit md:text-5xl">
+            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight font-outfit md:text-5xl">
               Start creating animations
               <br />
               <span className="text-[#38bdf8]">with AI today</span>
             </h2>
-            <p className="mx-auto mt-5 max-w-md text-slate-400 text-base">
+            <p className="mx-auto mt-4 sm:mt-5 max-w-md text-slate-400 text-sm sm:text-base">
               Join AnimoConcepto and turn your mathematical ideas into stunning visual animations in seconds.
             </p>
-            <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+            <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3.5 sm:gap-4">
               <motion.button
                 whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 0.97 }}
                 onClick={onGetStarted}
-                className="rounded-full bg-[#00406c] border border-[#005a96] px-10 py-4 text-base font-bold shadow-xl shadow-[#00406c]/40 transition-all hover:bg-[#005a96]"
+                className="rounded-full bg-[#00406c] border border-[#005a96] px-8 sm:px-10 py-3.5 sm:py-4 text-sm sm:text-base font-bold shadow-xl shadow-[#00406c]/40 transition-all hover:bg-[#005a96]"
               >
                 Create now — It's free
               </motion.button>
@@ -599,9 +676,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
                 <motion.div
                   whileHover={{ scale: 1.04 }}
                   whileTap={{ scale: 0.97 }}
-                  className="flex items-center gap-2.5 rounded-full border border-white/10 bg-white/[0.03] px-8 py-4 text-base font-bold text-slate-300 transition-all hover:bg-white/[0.06] hover:text-white"
+                  className="flex items-center justify-center gap-2.5 rounded-full border border-white/10 bg-white/[0.03] px-6 sm:px-8 py-3.5 sm:py-4 text-sm sm:text-base font-bold text-slate-300 transition-all hover:bg-white/[0.06] hover:text-white"
                 >
-                  <GithubIcon className="h-5 w-5" />
+                  <GithubIcon className="h-4 sm:h-5 w-4 sm:w-5" />
                   <span>View on GitHub</span>
                 </motion.div>
               </a>
@@ -611,8 +688,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
       </section>
 
       {/* ═══════════ FOOTER ═══════════ */}
-      <footer className="relative z-10 border-t border-[#002e4e] bg-[#00111c] px-6 py-10">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-5 md:flex-row">
+      <footer className="relative z-10 border-t border-[#002e4e] bg-[#00111c] px-4 sm:px-6 py-8 sm:py-10">
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 sm:gap-5 md:flex-row text-center sm:text-left">
           <div className="flex items-center gap-2.5">
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#00406c] border border-[#005a96]">
               <Video className="h-3.5 w-3.5 text-white" />

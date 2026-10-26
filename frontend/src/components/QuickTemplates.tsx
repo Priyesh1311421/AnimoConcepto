@@ -39,21 +39,21 @@ const TEMPLATES = [
 
 export const QuickTemplates: React.FC<QuickTemplatesProps> = ({ onSelectPrompt }) => {
   return (
-    <div className="mx-auto max-w-4xl px-4 py-12 flex flex-col justify-center h-full">
-      <div className="text-center mb-10">
+    <div className="mx-auto max-w-4xl px-4 py-6 sm:py-12 flex flex-col justify-center min-h-full">
+      <div className="text-center mb-6 sm:mb-10">
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.5 }}
-          className="inline-flex items-center gap-2 rounded-full border border-[#002e4e] bg-[#001a2c] px-4 py-1.5 text-xs text-[#38bdf8] mb-4"
+          className="inline-flex items-center gap-2 rounded-full border border-[#002e4e] bg-[#001a2c] px-3.5 sm:px-4 py-1.5 text-xs text-[#38bdf8] mb-3 sm:mb-4"
         >
           <Sparkles className="h-3.5 w-3.5 animate-pulse" />
           <span>Select a starter prompt below</span>
         </motion.div>
-        <h2 className="text-3xl font-black bg-gradient-to-r from-white via-sky-100 to-[#38bdf8] bg-clip-text text-transparent font-outfit">
+        <h2 className="text-2xl sm:text-3xl font-black bg-gradient-to-r from-white via-sky-100 to-[#38bdf8] bg-clip-text text-transparent font-outfit">
           What would you like to animate?
         </h2>
-        <p className="mt-2 text-slate-400 text-sm max-w-md mx-auto">
+        <p className="mt-2 text-slate-400 text-xs sm:text-sm max-w-md mx-auto">
           Describe the mathematical concept or algorithm, and our engine will code and render the animation using Manim.
         </p>
       </div>

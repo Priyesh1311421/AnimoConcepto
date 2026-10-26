@@ -34,6 +34,7 @@ const AppWorkspace: React.FC<{
   const [selectedConvoId, setSelectedConvoId] = useState<string | null>(null);
   const [prompts, setPrompts] = useState<PromptItem[]>([]);
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState<boolean>(false);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -77,6 +78,7 @@ const AppWorkspace: React.FC<{
       const newConvo = await api.createConversation(title || 'Untitled Animation');
       setConversations(prev => [newConvo, ...prev]);
       setSelectedConvoId(newConvo.id);
+      setIsMobileSidebarOpen(false);
     } catch (err) {
       console.error(err);
     }
@@ -151,16 +153,22 @@ const AppWorkspace: React.FC<{
       <Sidebar
         conversations={conversations}
         selectedId={selectedConvoId}
-        onSelect={setSelectedConvoId}
+        onSelect={(id) => {
+          setSelectedConvoId(id);
+          setIsMobileSidebarOpen(false);
+        }}
         onCreate={() => handleCreateConversation()}
         onDelete={handleDeleteConversation}
         onLogout={onLogout}
+        isOpenMobile={isMobileSidebarOpen}
+        onCloseMobile={() => setIsMobileSidebarOpen(false)}
       />
       <ChatArea
         prompts={prompts}
         isGenerating={isGenerating}
         onSubmitPrompt={handleSendPrompt}
         convoTitle={getActiveConvoTitle()}
+        onToggleSidebar={() => setIsMobileSidebarOpen(prev => !prev)}
       />
     </div>
   );

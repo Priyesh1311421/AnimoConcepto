@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Send, Sparkles, Video, HelpCircle, AlertCircle } from 'lucide-react';
+import { Send, Sparkles, Video, HelpCircle, AlertCircle, Menu } from 'lucide-react';
 import { QuickTemplates } from './QuickTemplates';
 import { SkeletonLoader } from './SkeletonLoader';
 import { CustomVideoPlayer } from './CustomVideoPlayer';
@@ -19,6 +19,7 @@ interface ChatAreaProps {
   isGenerating: boolean;
   onSubmitPrompt: (prompt: string) => void;
   convoTitle: string | null;
+  onToggleSidebar?: () => void;
 }
 
 export const ChatArea: React.FC<ChatAreaProps> = ({
@@ -26,6 +27,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
   isGenerating,
   onSubmitPrompt,
   convoTitle,
+  onToggleSidebar,
 }) => {
   const [input, setInput] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -53,60 +55,94 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
     }
   };
 
-  // Welcome Dashboard
+  // Welcome Dashboard (when no conversation is active)
   if (!convoTitle) {
     return (
-      <div className="flex flex-1 flex-col bg-[#0b0b14] overflow-y-auto">
-        <QuickTemplates onSelectPrompt={onSubmitPrompt} />
+      <div className="flex flex-1 flex-col bg-[#00111c] overflow-y-auto relative h-screen">
+        {/* Mobile top bar to access sidebar drawer */}
+        <header className="flex h-16 shrink-0 items-center justify-between border-b border-[#002e4e] bg-[#001a2c]/80 px-4 sm:px-6 backdrop-blur-md z-10 md:hidden">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={onToggleSidebar}
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#002e4e] bg-[#00111c] text-slate-300 hover:text-white hover:bg-[#00253e] transition-colors"
+              title="Open Conversation Menu"
+              aria-label="Open Conversation Menu"
+            >
+              <Menu className="h-5 w-5 text-[#38bdf8]" />
+            </button>
+            <div className="flex items-center gap-2">
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#00406c] border border-[#005a96]">
+                <Video className="h-4 w-4 text-white" />
+              </div>
+              <span className="text-sm font-bold tracking-tight text-white font-outfit">
+                Animo<span className="text-[#38bdf8]">Concepto</span>
+              </span>
+            </div>
+          </div>
+        </header>
+
+        <div className="flex-1 flex flex-col justify-center">
+          <QuickTemplates onSelectPrompt={onSubmitPrompt} />
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-1 flex-col bg-[#00111c] text-white overflow-hidden relative">
+    <div className="flex flex-1 flex-col bg-[#00111c] text-white overflow-hidden relative h-screen">
       {/* Background glow flares */}
       <div className="absolute top-10 right-20 h-64 w-64 rounded-full bg-[#00406c]/10 blur-[90px] pointer-events-none" />
       <div className="absolute bottom-40 left-10 h-64 w-64 rounded-full bg-[#002e4e]/15 blur-[90px] pointer-events-none" />
 
       {/* Header bar */}
-      <header className="flex h-16 shrink-0 items-center border-b border-[#002e4e] bg-[#001a2c]/80 px-6 backdrop-blur-md z-10">
-        <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#00111c] border border-[#002e4e]">
+      <header className="flex h-16 shrink-0 items-center justify-between border-b border-[#002e4e] bg-[#001a2c]/80 px-4 sm:px-6 backdrop-blur-md z-10">
+        <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+          {/* Mobile hamburger menu button */}
+          <button
+            onClick={onToggleSidebar}
+            className="flex md:hidden h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#002e4e] bg-[#00111c] text-slate-300 hover:text-white hover:bg-[#00253e] transition-colors mr-1"
+            title="Open Conversations Menu"
+            aria-label="Open Conversations Menu"
+          >
+            <Menu className="h-5 w-5 text-[#38bdf8]" />
+          </button>
+
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#00111c] border border-[#002e4e]">
             <Video className="h-4.5 w-4.5 text-[#38bdf8]" />
           </div>
-          <div>
-            <h2 className="text-sm font-bold font-outfit truncate max-w-md">{convoTitle}</h2>
-            <p className="text-[10px] text-slate-500 font-semibold tracking-wide uppercase">Video Generation Channel</p>
+          <div className="min-w-0">
+            <h2 className="text-xs sm:text-sm font-bold font-outfit truncate max-w-[200px] sm:max-w-md">{convoTitle}</h2>
+            <p className="text-[9px] sm:text-[10px] text-slate-500 font-semibold tracking-wide uppercase truncate">Video Generation Channel</p>
           </div>
         </div>
       </header>
 
       {/* Message Area */}
-      <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6 z-10 scrollbar-thin">
+      <div className="flex-1 overflow-y-auto px-3 sm:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6 z-10 scrollbar-thin">
         {prompts.length === 0 && !isGenerating ? (
-          <div className="flex h-full flex-col items-center justify-center text-center opacity-70">
-            <Sparkles className="h-10 w-10 text-[#38bdf8] animate-pulse mb-3" />
+          <div className="flex h-full flex-col items-center justify-center text-center opacity-70 px-4">
+            <Sparkles className="h-9 w-9 sm:h-10 sm:w-10 text-[#38bdf8] animate-pulse mb-3" />
             <p className="text-sm font-medium text-slate-300">Ready to create animations</p>
             <p className="text-xs text-slate-500 mt-1 max-w-xs leading-relaxed">
               Type a concept like <code className="text-[#38bdf8] bg-[#00253e] px-1.5 py-0.5 rounded border border-[#002e4e]">create a video to explain llms</code> below.
             </p>
           </div>
         ) : (
-          <div className="max-w-4xl mx-auto space-y-6">
+          <div className="max-w-4xl mx-auto space-y-4 sm:space-y-6">
             {prompts.map((item) => {
               const isUser = item.role === 'user';
               return (
                 <div key={item.id} className={`flex flex-col ${isUser ? 'items-end' : 'items-start'} gap-2 w-full`}>
                   {isUser ? (
                     // User text bubble
-                    <div className="bg-[#00406c] text-white border border-[#005a96] rounded-2xl rounded-tr-sm px-4.5 py-3 text-sm max-w-[80%] shadow-lg font-medium leading-relaxed select-text ml-auto">
+                    <div className="bg-[#00406c] text-white border border-[#005a96] rounded-2xl rounded-tr-sm px-3.5 sm:px-4.5 py-2.5 sm:py-3 text-xs sm:text-sm max-w-[88%] sm:max-w-[80%] shadow-lg font-medium leading-relaxed select-text ml-auto break-words">
                       {item.prompt}
                     </div>
                   ) : item.isError ? (
                     // Error message card
-                    <div className="w-full max-w-2xl rounded-xl border border-rose-500/20 bg-rose-950/10 p-5 text-rose-400 flex flex-col gap-2 shadow-lg">
-                      <div className="flex items-center gap-2 font-bold text-sm font-outfit">
-                        <AlertCircle className="h-5 w-5 text-rose-400 shrink-0" />
+                    <div className="w-full max-w-2xl rounded-xl border border-rose-500/20 bg-rose-950/10 p-4 sm:p-5 text-rose-400 flex flex-col gap-2 shadow-lg">
+                      <div className="flex items-center gap-2 font-bold text-xs sm:text-sm font-outfit">
+                        <AlertCircle className="h-4.5 w-4.5 text-rose-400 shrink-0" />
                         <span>error generating video</span>
                       </div>
                     </div>
@@ -122,7 +158,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
 
             {/* Loading skeleton placeholder */}
             {isGenerating && (
-              <div className="flex flex-col items-start gap-2">
+              <div className="flex flex-col items-start gap-2 w-full">
                 <SkeletonLoader />
               </div>
             )}
@@ -132,8 +168,8 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
       </div>
 
       {/* Input panel bar */}
-      <footer className="border-t border-[#002e4e] bg-[#001a2c]/70 p-4 shrink-0 z-10 backdrop-blur-md">
-        <form onSubmit={handleSubmit} className="max-w-4xl mx-auto relative flex items-center gap-3">
+      <footer className="border-t border-[#002e4e] bg-[#001a2c]/80 p-3 sm:p-4 shrink-0 z-10 backdrop-blur-md">
+        <form onSubmit={handleSubmit} className="max-w-4xl mx-auto relative flex items-center gap-2 sm:gap-3">
           <div className="relative flex-1">
             <textarea
               value={input}
@@ -142,7 +178,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
               disabled={isGenerating}
               rows={1}
               placeholder={isGenerating ? "Generating animation video..." : "Explain a mathematical concept or prompt scene generation..."}
-              className="w-full resize-none rounded-xl border border-[#002e4e] bg-[#00111c] py-3.5 pr-12 pl-4 text-sm text-white placeholder-slate-500 outline-none transition-all duration-300 focus:border-[#00406c] focus:ring-1 focus:ring-[#00406c] disabled:opacity-50 min-h-[50px] max-h-[150px] scrollbar-thin"
+              className="w-full resize-none rounded-xl border border-[#002e4e] bg-[#00111c] py-3 sm:py-3.5 pr-10 sm:pr-12 pl-3.5 sm:pl-4 text-xs sm:text-sm text-white placeholder-slate-500 outline-none transition-all duration-300 focus:border-[#00406c] focus:ring-1 focus:ring-[#00406c] disabled:opacity-50 min-h-[46px] sm:min-h-[50px] max-h-[140px] scrollbar-thin"
               style={{ height: 'auto' }}
             />
           </div>
@@ -152,14 +188,15 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
             whileTap={{ scale: 0.95 }}
             type="submit"
             disabled={!input.trim() || isGenerating}
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#00406c] border border-[#005a96] text-white shadow-lg shadow-[#00406c]/30 transition-all duration-300 hover:bg-[#005a96] disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-xl bg-[#00406c] border border-[#005a96] text-white shadow-lg shadow-[#00406c]/30 transition-all duration-300 hover:bg-[#005a96] disabled:cursor-not-allowed disabled:opacity-50"
+            aria-label="Send prompt"
           >
-            <Send className="h-4.5 w-4.5" />
+            <Send className="h-4 w-4 sm:h-4.5 sm:w-4.5" />
           </motion.button>
         </form>
-        <div className="max-w-4xl mx-auto flex items-center gap-1.5 mt-2 justify-center text-[10px] text-slate-500 font-semibold tracking-wider uppercase">
-          <HelpCircle className="h-3 w-3 text-slate-600" />
-          <span>Press Enter to send prompt. Multi-line is Shift + Enter.</span>
+        <div className="max-w-4xl mx-auto flex items-center gap-1.5 mt-1.5 sm:mt-2 justify-center text-[9px] sm:text-[10px] text-slate-500 font-semibold tracking-wider uppercase text-center">
+          <HelpCircle className="h-3 w-3 text-slate-600 shrink-0 hidden sm:inline" />
+          <span>Press Enter to send. Shift + Enter for new line.</span>
         </div>
       </footer>
     </div>

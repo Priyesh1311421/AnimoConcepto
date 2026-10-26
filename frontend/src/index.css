@@ -25,11 +25,24 @@
 }
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
+
   body {
     background-color: #00111c;
     color: #ffffff;
     font-family: 'Inter', sans-serif;
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  /* Ensure touch targets have responsive feedback */
+  button, a {
+    touch-action: manipulation;
   }
 }
 
@@ -39,8 +52,8 @@
 
 /* Custom Scrollbar Styles */
 .scrollbar-thin::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 
 .scrollbar-thin::-webkit-scrollbar-track {
@@ -71,16 +84,17 @@ input[type="range"]::-webkit-slider-runnable-track {
 
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
-  height: 12px;
-  width: 12px;
+  height: 14px;
+  width: 14px;
   border-radius: 50%;
   background: #38bdf8;
   cursor: pointer;
-  margin-top: -4px;
+  margin-top: -5px;
   box-shadow: 0 0 8px rgba(56, 189, 248, 0.8);
   transition: transform 0.1s ease;
 }
 
-input[type="range"]::-webkit-slider-thumb:hover {
+input[type="range"]::-webkit-slider-thumb:hover,
+input[type="range"]::-webkit-slider-thumb:active {
   transform: scale(1.35);
 }

@@ -193,10 +193,10 @@ export const CustomVideoPlayer: React.FC<CustomVideoPlayerProps> = ({ promptId }
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.8 }}
             onClick={handlePlayPause}
-            className="absolute inset-0 flex items-center justify-center bg-black/30 cursor-pointer"
+            className="absolute inset-0 flex items-center justify-center bg-black/40 cursor-pointer"
           >
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-brand-500/90 text-white shadow-lg shadow-brand-500/20 hover:scale-110 transition-transform duration-300">
-              <Play className="h-7 w-7 fill-white translate-x-0.5" />
+            <div className="flex h-12 w-12 sm:h-16 sm:w-16 items-center justify-center rounded-full bg-brand-500/90 text-white shadow-lg shadow-brand-500/20 hover:scale-110 active:scale-95 transition-transform duration-300">
+              <Play className="h-5 w-5 sm:h-7 sm:w-7 fill-white translate-x-0.5" />
             </div>
           </motion.div>
         )}
@@ -210,41 +210,43 @@ export const CustomVideoPlayer: React.FC<CustomVideoPlayerProps> = ({ promptId }
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 15 }}
             transition={{ duration: 0.2 }}
-            className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent p-4 pt-10 flex flex-col gap-3.5"
+            className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/95 via-black/70 to-transparent p-2 sm:p-4 pt-6 sm:pt-10 flex flex-col gap-2 sm:gap-3"
           >
             {/* Timeline track slider */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               <input
                 type="range"
                 min={0}
                 max={duration || 100}
                 value={currentTime}
                 onChange={handleSeek}
-                className="w-full h-1 bg-white/20 rounded-lg appearance-none cursor-pointer accent-brand-500 hover:h-1.5 transition-all outline-none"
+                className="w-full h-1 sm:h-1.5 bg-white/20 rounded-lg appearance-none cursor-pointer accent-brand-500 hover:h-2 transition-all outline-none"
               />
             </div>
 
             {/* Navigation and buttons */}
-            <div className="flex items-center justify-between text-white select-none">
-              <div className="flex items-center gap-4">
+            <div className="flex items-center justify-between text-white select-none gap-2">
+              <div className="flex items-center gap-2 sm:gap-4">
                 <button
                   onClick={handlePlayPause}
-                  className="rounded-lg p-1 hover:bg-white/10 transition-colors"
+                  className="rounded-lg p-1.5 hover:bg-white/10 active:bg-white/20 transition-colors"
+                  aria-label={isPlaying ? 'Pause' : 'Play'}
                 >
                   {isPlaying ? (
-                    <Pause className="h-5 w-5 fill-white" />
+                    <Pause className="h-4 w-4 sm:h-5 sm:w-5 fill-white" />
                   ) : (
-                    <Play className="h-5 w-5 fill-white" />
+                    <Play className="h-4 w-4 sm:h-5 sm:w-5 fill-white" />
                   )}
                 </button>
 
                 {/* Volume selector */}
-                <div className="flex items-center gap-2 group/volume">
+                <div className="flex items-center gap-1.5 group/volume">
                   <button
                     onClick={handleToggleMute}
-                    className="rounded-lg p-1 hover:bg-white/10 transition-colors"
+                    className="rounded-lg p-1.5 hover:bg-white/10 active:bg-white/20 transition-colors"
+                    aria-label={isMuted ? 'Unmute' : 'Mute'}
                   >
-                    {isMuted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
+                    {isMuted ? <VolumeX className="h-4 w-4 sm:h-5 sm:w-5" /> : <Volume2 className="h-4 w-4 sm:h-5 sm:w-5" />}
                   </button>
                   <input
                     type="range"
@@ -253,34 +255,36 @@ export const CustomVideoPlayer: React.FC<CustomVideoPlayerProps> = ({ promptId }
                     step={0.05}
                     value={isMuted ? 0 : volume}
                     onChange={handleVolumeChange}
-                    className="w-0 opacity-0 group-hover/volume:w-16 group-hover/volume:opacity-100 h-1 bg-white/20 rounded-lg appearance-none cursor-pointer accent-white transition-all outline-none"
+                    className="hidden sm:inline-block w-0 opacity-0 group-hover/volume:w-16 group-hover/volume:opacity-100 h-1 bg-white/20 rounded-lg appearance-none cursor-pointer accent-white transition-all outline-none"
                   />
                 </div>
 
                 {/* Duration tracker */}
-                <span className="text-xs font-mono text-slate-300">
+                <span className="text-[10px] sm:text-xs font-mono text-slate-300 whitespace-nowrap">
                   {formatTime(currentTime)} <span className="opacity-40">/</span> {formatTime(duration)}
                 </span>
               </div>
 
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1.5 sm:gap-3">
                 {/* Download video */}
                 <a
                   href={videoUrl}
                   download={`manim_animation_${promptId}.mp4`}
-                  className="rounded-lg p-1 hover:bg-white/10 transition-colors flex items-center justify-center"
+                  className="rounded-lg p-1.5 hover:bg-white/10 active:bg-white/20 transition-colors flex items-center justify-center"
                   title="Download MP4"
+                  aria-label="Download MP4"
                 >
-                  <Download className="h-4.5 w-4.5" />
+                  <Download className="h-4 w-4 sm:h-4.5 sm:w-4.5" />
                 </a>
 
                 {/* Go Fullscreen */}
                 <button
                   onClick={handleToggleFullscreen}
-                  className="rounded-lg p-1 hover:bg-white/10 transition-colors"
+                  className="rounded-lg p-1.5 hover:bg-white/10 active:bg-white/20 transition-colors"
                   title="Fullscreen"
+                  aria-label="Fullscreen"
                 >
-                  <Maximize2 className="h-4.5 w-4.5" />
+                  <Maximize2 className="h-4 w-4 sm:h-4.5 sm:w-4.5" />
                 </button>
               </div>
             </div>
