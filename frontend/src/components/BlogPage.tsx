@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Newspaper, Video, Sparkles } from 'lucide-react';
+import { ArrowLeft, Newspaper, Video } from 'lucide-react';
 
 export const BlogPage: React.FC = () => {
   const navigate = useNavigate();
