@@ -61,6 +61,7 @@ def extract_code_block(llm_output: str) -> str:
 
 
 def _replace_tex_with_text(code: str) -> str:
+    code = re.sub(r"\bMathTex\s*\(", "Text(", code)
     return re.sub(r"\bTex\s*\(", "Text(", code)
 
 async def get_user(authorization: str = Header(...)):
@@ -181,10 +182,10 @@ async def generate(prompt: Prompt, user=Depends(get_user)):
         # replace Tex with Text to avoid runtime FileNotFoundError from pdflatex.
         safe_code = _replace_tex_with_text(code)
 
-        with open(script_path, "w") as f:
+        with open(script_path, "w", encoding="utf-8") as f:
             f.write(safe_code)
 
-        with open(log_path, "w") as log_file:
+        with open(log_path, "w", encoding="utf-8") as log_file:
             subprocess.run(
                 [sys.executable, "-m", "manim", "-ql", script_path, scene_name, "--media_dir", media_dir],
                 stdout=log_file,
@@ -221,7 +222,15 @@ async def generate(prompt: Prompt, user=Depends(get_user)):
         }
 
     except subprocess.CalledProcessError:
-        raise HTTPException(500, f"Render failed. See log at: {log_path}")
+        error_details = ""
+        if os.path.exists(log_path):
+            try:
+                with open(log_path, "r", encoding="utf-8", errors="replace") as lf:
+                    lines = lf.readlines()
+                    error_details = "\n" + "".join(lines[-15:])
+            except Exception:
+                pass
+        raise HTTPException(500, f"Render failed. See log at: {log_path}{error_details}")
     except Exception as e:
         raise HTTPException(500, str(e))
 
