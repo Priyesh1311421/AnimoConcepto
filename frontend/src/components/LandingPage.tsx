@@ -699,7 +699,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
             </span>
           </div>
           <p className="text-xs text-slate-500">
-            © {new Date().getFullYear()} AnimoConcepto · Built with React, FastAPI, Manim & Gemini AI
+            © {new Date().getFullYear()} AnimoConcepto · Built with React, FastAPI & Gemini AI
           </p>
           <a
             href="https://github.com/Priyesh1311421/AnimoConcepto"

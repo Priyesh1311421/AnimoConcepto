@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, Brain, Binary, RefreshCw, Orbit } from 'lucide-react';
+import { Brain, Binary, RefreshCw, Orbit, ArrowUpRight, Sparkles } from 'lucide-react';
 
 interface QuickTemplatesProps {
   onSelectPrompt: (prompt: string) => void;
@@ -8,78 +8,87 @@ interface QuickTemplatesProps {
 
 const TEMPLATES = [
   {
-    title: 'Explain LLMs',
-    description: 'Create an animation explaining embeddings, transformers, or text tokens.',
-    prompt: 'create a video to explain llms',
+    category: 'Machine Learning',
+    title: 'Explain Neural Networks',
+    description: 'Animate input vectors flowing through weights and activation functions.',
+    prompt: 'create a video to explain neural networks with input layers, weights, and activations',
     icon: Brain,
-    color: 'border-[#002e4e] bg-[#001a2c] text-[#38bdf8] hover:border-[#00406c]',
+    badge: 'Popular',
   },
   {
+    category: 'Computer Science',
     title: 'Binary Search Visualizer',
-    description: 'Animate target comparison and pointer bounds division.',
+    description: 'Narrow down search interval pointers on a sorted list with midpoint highlights.',
     prompt: 'create a video to visualize binary search index narrowing on a sorted array',
     icon: Binary,
-    color: 'border-[#002e4e] bg-[#001a2c] text-[#38bdf8] hover:border-[#00406c]',
+    badge: 'Algorithm',
   },
   {
+    category: 'Applied Mathematics',
     title: 'Fourier Series Circles',
-    description: 'Animate multiple rotating vectors drawing a complex wave.',
+    description: 'Show orbiting vector epicycles constructively drawing a square wave.',
     prompt: 'create a video demonstrating fourier series sum of rotating vector circles drawing a square wave',
     icon: RefreshCw,
-    color: 'border-[#002e4e] bg-[#001a2c] text-[#38bdf8] hover:border-[#00406c]',
+    badge: 'Math',
   },
   {
-    title: 'Linear Transformation',
-    description: 'Visualize matrix grid warping, translation, and vector transformation.',
+    category: 'Linear Algebra',
+    title: '2D Matrix Transformation',
+    description: 'Visualize basis vectors i-hat and j-hat warping the coordinate grid.',
     prompt: 'create a video showing linear transformation of a 2D grid space scaling and rotating basis vectors',
     icon: Orbit,
-    color: 'border-[#002e4e] bg-[#001a2c] text-[#38bdf8] hover:border-[#00406c]',
+    badge: 'Geometry',
   },
 ];
 
 export const QuickTemplates: React.FC<QuickTemplatesProps> = ({ onSelectPrompt }) => {
   return (
-    <div className="mx-auto max-w-4xl px-4 py-6 sm:py-12 flex flex-col justify-center min-h-full">
-      <div className="text-center mb-6 sm:mb-10">
-        <motion.div
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 0.5 }}
-          className="inline-flex items-center gap-2 rounded-full border border-[#002e4e] bg-[#001a2c] px-3.5 sm:px-4 py-1.5 text-xs text-[#38bdf8] mb-3 sm:mb-4"
-        >
-          <Sparkles className="h-3.5 w-3.5 animate-pulse" />
-          <span>Select a starter prompt below</span>
-        </motion.div>
-        <h2 className="text-2xl sm:text-3xl font-black bg-gradient-to-r from-white via-sky-100 to-[#38bdf8] bg-clip-text text-transparent font-outfit">
-          What would you like to animate?
-        </h2>
-        <p className="mt-2 text-slate-400 text-xs sm:text-sm max-w-md mx-auto">
-          Describe the mathematical concept or algorithm, and our engine will code and render the animation using Manim.
-        </p>
+    <div className="w-full max-w-4xl mx-auto px-4">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <Sparkles className="h-4 w-4 text-sky-400" />
+          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 font-outfit">
+            Starter Concepts & Templates
+          </h3>
+        </div>
+        <span className="text-[11px] text-slate-500">Click to load</span>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {TEMPLATES.map((tmpl, idx) => (
           <motion.button
             key={idx}
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: idx * 0.1 }}
-            whileHover={{ scale: 1.02, y: -2 }}
+            whileHover={{ y: -2, borderColor: 'rgba(56, 189, 248, 0.4)' }}
             whileTap={{ scale: 0.98 }}
             onClick={() => onSelectPrompt(tmpl.prompt)}
-            className={`flex items-start gap-4 rounded-2xl border bg-gradient-to-br p-5 text-left transition-all duration-300 ${tmpl.color} hover:bg-white/[0.02]`}
+            className="group flex flex-col justify-between rounded-xl border border-white/10 bg-[#0d1017] p-4 text-left transition-all duration-200 hover:bg-[#121622] hover:shadow-lg focus-visible:ring-1 focus-visible:ring-sky-500"
           >
-            <div className="rounded-xl bg-black/20 p-3 shrink-0">
-              <tmpl.icon className="h-6 w-6" />
-            </div>
             <div>
-              <h3 className="font-bold text-white text-base font-outfit">{tmpl.title}</h3>
-              <p className="mt-1 text-slate-400 text-xs leading-relaxed">{tmpl.description}</p>
-              <div className="mt-3.5 inline-flex items-center gap-1 text-[10px] uppercase font-bold tracking-wider opacity-60 hover:opacity-100">
-                <span>Try prompt</span>
-                <span className="text-xs">→</span>
+              <div className="flex items-center justify-between gap-2 mb-2.5">
+                <div className="flex items-center gap-2">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-sky-500/10 text-sky-400 border border-sky-500/20 group-hover:bg-sky-500 group-hover:text-white transition-colors">
+                    <tmpl.icon className="h-4 w-4" />
+                  </div>
+                  <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 font-mono">
+                    {tmpl.category}
+                  </span>
+                </div>
+                <span className="rounded-full bg-white/5 px-2 py-0.5 text-[9px] font-medium text-slate-400">
+                  {tmpl.badge}
+                </span>
               </div>
+
+              <h4 className="text-sm font-bold text-white group-hover:text-sky-300 transition-colors font-outfit">
+                {tmpl.title}
+              </h4>
+              <p className="mt-1 text-xs text-slate-400 leading-relaxed line-clamp-2">
+                {tmpl.description}
+              </p>
+            </div>
+
+            <div className="mt-3.5 flex items-center gap-1 text-[11px] font-semibold text-sky-400 opacity-80 group-hover:opacity-100 transition-opacity">
+              <span>Use template</span>
+              <ArrowUpRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </div>
           </motion.button>
         ))}

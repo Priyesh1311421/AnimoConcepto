@@ -149,7 +149,7 @@ export const api = {
     // Index 3: Assistant Prompt (next code)
     // Wait, let's write a robust logic to enrich the role in frontend!
     // We can check:
-    // - If prompt contains "import manim" or "class GeneratedScene" or starts with "from manim import", it's definitely the assistant prompt (role: 'assistant').
+    // - If prompt contains code or "class GeneratedScene", it's the assistant response.
     // - Otherwise, we can alternate starting with 'user' for index 0.
     // Let's do that! It is extremely robust and will map the database entries perfectly!
     

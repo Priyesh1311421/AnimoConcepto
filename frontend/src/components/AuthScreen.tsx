@@ -83,7 +83,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
           AnimoConcepto
         </h1>
         <p className="mt-1.5 sm:mt-2 text-xs sm:text-sm text-slate-400 max-w-xs">
-          Generate stunning Manim mathematical and explanatory animations with AI.
+          Generate stunning mathematical and explanatory animations with AI.
         </p>
       </motion.div>
 

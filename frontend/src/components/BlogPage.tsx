@@ -67,8 +67,8 @@ export const BlogPage: React.FC = () => {
             {
               date: 'July 22, 2026',
               category: 'AI & Machine Learning',
-              title: 'How Gemini 2.0 Generates Executable Manim Code',
-              excerpt: 'An inside look at prompt engineering and strict AST validation pipelines for generating error-free Python animations.',
+              title: 'How Gemini 2.0 Generates Executable Animation Scenes',
+              excerpt: 'An inside look at prompt engineering and strict AST validation pipelines for generating error-free vector animations.',
             },
             {
               date: 'July 18, 2026',

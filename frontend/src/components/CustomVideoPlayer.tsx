@@ -1,15 +1,23 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Play, Pause, Volume2, VolumeX, Maximize2, Download, Loader2, RefreshCw } from 'lucide-react';
+import { Play, Pause, Maximize2, Download, Loader2, RotateCcw } from 'lucide-react';
 import { api } from '../utils/api';
 
 interface CustomVideoPlayerProps {
   promptId: string;
+  onLoaded?: () => void;
 }
 
-export const CustomVideoPlayer: React.FC<CustomVideoPlayerProps> = ({ promptId }) => {
+export const CustomVideoPlayer: React.FC<CustomVideoPlayerProps> = ({ promptId, onLoaded }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const blobUrlRef = useRef<string | null>(null);
+  const onLoadedRef = useRef(onLoaded);
+
+  useEffect(() => {
+    onLoadedRef.current = onLoaded;
+  }, [onLoaded]);
+
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -18,42 +26,52 @@ export const CustomVideoPlayer: React.FC<CustomVideoPlayerProps> = ({ promptId }
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [volume, setVolume] = useState(0.8);
-  const [isMuted, setIsMuted] = useState(false);
   const [showControls, setShowControls] = useState(true);
+  const [isHovered, setIsHovered] = useState(false);
 
-  // Fetch the video file as an authenticated blob
+  // Load video blob only when promptId changes
   useEffect(() => {
-    let active = true;
-    const loadVideo = async () => {
-      setLoading(true);
-      setError(null);
+    let isCancelled = false;
+    setLoading(true);
+    setError(null);
+
+    const load = async () => {
       try {
         const url = await api.fetchVideoBlob(promptId);
-        if (active) {
-          setVideoUrl(url);
-          setLoading(false);
+        if (isCancelled) {
+          URL.revokeObjectURL(url);
+          return;
         }
-      } catch (err: any) {
-        if (active) {
-          setError(err.message || 'Error loading video player');
+
+        // Clean up previous blob URL if any
+        if (blobUrlRef.current) {
+          URL.revokeObjectURL(blobUrlRef.current);
+        }
+
+        blobUrlRef.current = url;
+        setVideoUrl(url);
+        setLoading(false);
+        onLoadedRef.current?.();
+      } catch (err: unknown) {
+        if (!isCancelled) {
+          setError((err as Error).message || 'Error loading video file');
           setLoading(false);
         }
       }
     };
 
-    loadVideo();
+    load();
 
     return () => {
-      active = false;
-      // Clean up object URL when component unmounts to prevent leaks
-      if (videoUrl) {
-        URL.revokeObjectURL(videoUrl);
+      isCancelled = true;
+      if (blobUrlRef.current) {
+        URL.revokeObjectURL(blobUrlRef.current);
+        blobUrlRef.current = null;
       }
     };
-  }, [promptId]);
+  }, [promptId]); // STRICTLY depends only on promptId to prevent infinite loop and flickering!
 
-  // Handle auto-hide controls
+  // Auto-hide controls during playback
   useEffect(() => {
     if (!isPlaying) {
       setShowControls(true);
@@ -61,15 +79,13 @@ export const CustomVideoPlayer: React.FC<CustomVideoPlayerProps> = ({ promptId }
     }
 
     const timer = setTimeout(() => {
-      setShowControls(false);
-    }, 2500);
+      if (!isHovered) {
+        setShowControls(false);
+      }
+    }, 2800);
 
     return () => clearTimeout(timer);
-  }, [showControls, isPlaying]);
-
-  const handleMouseMove = () => {
-    setShowControls(true);
-  };
+  }, [isPlaying, isHovered]);
 
   const handlePlayPause = () => {
     if (!videoRef.current) return;
@@ -91,22 +107,6 @@ export const CustomVideoPlayer: React.FC<CustomVideoPlayerProps> = ({ promptId }
     setDuration(videoRef.current.duration);
   };
 
-  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newVol = parseFloat(e.target.value);
-    setVolume(newVol);
-    if (videoRef.current) {
-      videoRef.current.volume = newVol;
-    }
-    setIsMuted(newVol === 0);
-  };
-
-  const handleToggleMute = () => {
-    if (!videoRef.current) return;
-    const nextMuted = !isMuted;
-    setIsMuted(nextMuted);
-    videoRef.current.muted = nextMuted;
-  };
-
   const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!videoRef.current) return;
     const seekTime = parseFloat(e.target.value);
@@ -124,44 +124,58 @@ export const CustomVideoPlayer: React.FC<CustomVideoPlayerProps> = ({ promptId }
   };
 
   const formatTime = (time: number) => {
-    if (isNaN(time)) return '0:00';
+    if (isNaN(time) || !isFinite(time)) return '0:00';
     const mins = Math.floor(time / 60);
     const secs = Math.floor(time % 60);
     return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
   };
 
+  const handleRetry = () => {
+    setLoading(true);
+    setError(null);
+    api.fetchVideoBlob(promptId)
+      .then((url) => {
+        if (blobUrlRef.current) {
+          URL.revokeObjectURL(blobUrlRef.current);
+        }
+        blobUrlRef.current = url;
+        setVideoUrl(url);
+        setLoading(false);
+        onLoaded?.();
+      })
+      .catch((err: unknown) => {
+        setError((err as Error).message || 'Error loading video file');
+        setLoading(false);
+      });
+  };
+
   if (loading) {
     return (
-      <div className="aspect-video w-full max-w-2xl rounded-xl border border-white/5 bg-slate-950/60 flex flex-col items-center justify-center gap-3">
-        <Loader2 className="h-8 w-8 text-brand-400 animate-spin" />
-        <span className="text-xs text-slate-400 font-medium">Loading video file...</span>
+      <div className="aspect-video w-full max-w-[540px] sm:max-w-[560px] rounded-xl border border-white/10 bg-[#0d1017] flex flex-col items-center justify-center gap-3">
+        <div className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-sky-500/10 border border-sky-500/20 shadow-lg shadow-sky-500/5">
+          <Loader2 className="h-5 w-5 text-sky-400 animate-spin" />
+        </div>
+        <span className="text-xs text-slate-400 font-medium tracking-wide">Loading animation video...</span>
       </div>
     );
   }
 
   if (error || !videoUrl) {
     return (
-      <div className="aspect-video w-full max-w-2xl rounded-xl border border-rose-500/20 bg-rose-950/10 flex flex-col items-center justify-center gap-3 p-6 text-center">
-        <span className="text-sm font-semibold text-rose-400">Failed to render video</span>
-        <span className="text-xs text-rose-500 max-w-xs">{error || 'An unexpected error occurred.'}</span>
+      <div className="aspect-video w-full max-w-[540px] sm:max-w-[560px] rounded-xl border border-rose-500/20 bg-rose-950/15 flex flex-col items-center justify-center gap-3 p-5 sm:p-6 text-center">
+        <div className="h-9 w-9 rounded-full bg-rose-500/20 border border-rose-500/30 flex items-center justify-center text-rose-400">
+          <RotateCcw className="h-4 w-4" />
+        </div>
+        <div>
+          <h4 className="text-sm font-semibold text-rose-300">Video Player Unavailable</h4>
+          <p className="text-xs text-rose-400/80 mt-1 max-w-sm">{error || 'Unable to load MP4 stream.'}</p>
+        </div>
         <button
-          onClick={() => {
-            setLoading(true);
-            setError(null);
-            api.fetchVideoBlob(promptId)
-              .then(url => {
-                setVideoUrl(url);
-                setLoading(false);
-              })
-              .catch(err => {
-                setError(err.message || 'Error loading video player');
-                setLoading(false);
-              });
-          }}
-          className="mt-2 flex items-center gap-1.5 rounded-lg bg-rose-500/20 px-3.5 py-1.5 text-xs text-rose-400 border border-rose-500/30 hover:bg-rose-500/30 transition-colors"
+          onClick={handleRetry}
+          className="mt-1 flex items-center gap-1.5 rounded-lg bg-rose-500/20 px-3.5 py-1.5 text-xs font-semibold text-rose-300 border border-rose-500/30 hover:bg-rose-500/30 transition-colors"
         >
-          <RefreshCw className="h-3.5 w-3.5" />
-          <span>Reload Player</span>
+          <RotateCcw className="h-3.5 w-3.5" />
+          <span>Retry Loading</span>
         </button>
       </div>
     );
@@ -170,9 +184,16 @@ export const CustomVideoPlayer: React.FC<CustomVideoPlayerProps> = ({ promptId }
   return (
     <div
       ref={containerRef}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={() => isPlaying && setShowControls(false)}
-      className="group relative aspect-video w-full max-w-2xl overflow-hidden rounded-xl border border-white/10 bg-black shadow-xl"
+      onMouseEnter={() => {
+        setIsHovered(true);
+        setShowControls(true);
+      }}
+      onMouseLeave={() => {
+        setIsHovered(false);
+        if (isPlaying) setShowControls(false);
+      }}
+      onMouseMove={() => setShowControls(true)}
+      className="group relative aspect-video w-full max-w-[540px] sm:max-w-[560px] overflow-hidden rounded-xl border border-white/10 bg-black shadow-2xl focus-within:ring-2 focus-within:ring-sky-500/50"
     >
       <video
         ref={videoRef}
@@ -185,52 +206,54 @@ export const CustomVideoPlayer: React.FC<CustomVideoPlayerProps> = ({ promptId }
         playsInline
       />
 
-      {/* Big Center Play Overlay (when paused) */}
+      {/* Center Play Overlay (when paused) */}
       <AnimatePresence>
         {!isPlaying && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
+            initial={{ opacity: 0, scale: 0.85 }}
             animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
+            exit={{ opacity: 0, scale: 0.85 }}
             onClick={handlePlayPause}
-            className="absolute inset-0 flex items-center justify-center bg-black/40 cursor-pointer"
+            className="absolute inset-0 flex items-center justify-center bg-black/35 cursor-pointer backdrop-blur-[1px]"
           >
-            <div className="flex h-12 w-12 sm:h-16 sm:w-16 items-center justify-center rounded-full bg-brand-500/90 text-white shadow-lg shadow-brand-500/20 hover:scale-110 active:scale-95 transition-transform duration-300">
-              <Play className="h-5 w-5 sm:h-7 sm:w-7 fill-white translate-x-0.5" />
+            <div className="flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-full bg-sky-500 text-white shadow-xl shadow-sky-500/30 hover:scale-105 active:scale-95 transition-all duration-200">
+              <Play className="h-6 w-6 sm:h-7 sm:w-7 fill-white translate-x-0.5" />
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Custom Controls Bar */}
+      {/* Custom Bottom Controls Bar */}
       <AnimatePresence>
         {showControls && (
           <motion.div
-            initial={{ opacity: 0, y: 15 }}
+            initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 15 }}
-            transition={{ duration: 0.2 }}
-            className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/95 via-black/70 to-transparent p-2 sm:p-4 pt-6 sm:pt-10 flex flex-col gap-2 sm:gap-3"
+            exit={{ opacity: 0, y: 12 }}
+            transition={{ duration: 0.18 }}
+            className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/95 via-black/70 to-transparent p-3 sm:p-4 pt-8 flex flex-col gap-2.5 z-20"
           >
-            {/* Timeline track slider */}
+            {/* Timeline Progress Slider */}
             <div className="flex items-center gap-2">
               <input
                 type="range"
                 min={0}
                 max={duration || 100}
+                step={0.01}
                 value={currentTime}
                 onChange={handleSeek}
-                className="w-full h-1 sm:h-1.5 bg-white/20 rounded-lg appearance-none cursor-pointer accent-brand-500 hover:h-2 transition-all outline-none"
+                aria-label="Video timeline seek"
+                className="w-full h-1 sm:h-1.5 bg-white/25 rounded-full appearance-none cursor-pointer accent-sky-400 hover:h-2 transition-all outline-none"
               />
             </div>
 
-            {/* Navigation and buttons */}
+            {/* Controls Row */}
             <div className="flex items-center justify-between text-white select-none gap-2">
-              <div className="flex items-center gap-2 sm:gap-4">
+              <div className="flex items-center gap-2 sm:gap-3">
                 <button
                   onClick={handlePlayPause}
-                  className="rounded-lg p-1.5 hover:bg-white/10 active:bg-white/20 transition-colors"
-                  aria-label={isPlaying ? 'Pause' : 'Play'}
+                  className="rounded-lg p-1.5 hover:bg-white/10 active:bg-white/20 transition-colors text-white focus-visible:ring-1 focus-visible:ring-sky-400"
+                  aria-label={isPlaying ? 'Pause animation' : 'Play animation'}
                 >
                   {isPlaying ? (
                     <Pause className="h-4 w-4 sm:h-5 sm:w-5 fill-white" />
@@ -239,50 +262,29 @@ export const CustomVideoPlayer: React.FC<CustomVideoPlayerProps> = ({ promptId }
                   )}
                 </button>
 
-                {/* Volume selector */}
-                <div className="flex items-center gap-1.5 group/volume">
-                  <button
-                    onClick={handleToggleMute}
-                    className="rounded-lg p-1.5 hover:bg-white/10 active:bg-white/20 transition-colors"
-                    aria-label={isMuted ? 'Unmute' : 'Mute'}
-                  >
-                    {isMuted ? <VolumeX className="h-4 w-4 sm:h-5 sm:w-5" /> : <Volume2 className="h-4 w-4 sm:h-5 sm:w-5" />}
-                  </button>
-                  <input
-                    type="range"
-                    min={0}
-                    max={1}
-                    step={0.05}
-                    value={isMuted ? 0 : volume}
-                    onChange={handleVolumeChange}
-                    className="hidden sm:inline-block w-0 opacity-0 group-hover/volume:w-16 group-hover/volume:opacity-100 h-1 bg-white/20 rounded-lg appearance-none cursor-pointer accent-white transition-all outline-none"
-                  />
-                </div>
-
-                {/* Duration tracker */}
-                <span className="text-[10px] sm:text-xs font-mono text-slate-300 whitespace-nowrap">
-                  {formatTime(currentTime)} <span className="opacity-40">/</span> {formatTime(duration)}
+                {/* Time Display */}
+                <span className="text-[11px] sm:text-xs font-mono text-slate-300 tracking-wider">
+                  {formatTime(currentTime)} <span className="text-slate-500">/</span> {formatTime(duration)}
                 </span>
               </div>
 
-              <div className="flex items-center gap-1.5 sm:gap-3">
-                {/* Download video */}
+              {/* Action Buttons: Fullscreen & Download */}
+              <div className="flex items-center gap-1 sm:gap-2">
                 <a
                   href={videoUrl}
-                  download={`manim_animation_${promptId}.mp4`}
-                  className="rounded-lg p-1.5 hover:bg-white/10 active:bg-white/20 transition-colors flex items-center justify-center"
+                  download={`animation_${promptId}.mp4`}
+                  className="rounded-lg p-1.5 text-slate-300 hover:text-white hover:bg-white/10 active:bg-white/20 transition-colors flex items-center justify-center"
                   title="Download MP4"
-                  aria-label="Download MP4"
+                  aria-label="Download MP4 video"
                 >
                   <Download className="h-4 w-4 sm:h-4.5 sm:w-4.5" />
                 </a>
 
-                {/* Go Fullscreen */}
                 <button
                   onClick={handleToggleFullscreen}
-                  className="rounded-lg p-1.5 hover:bg-white/10 active:bg-white/20 transition-colors"
-                  title="Fullscreen"
-                  aria-label="Fullscreen"
+                  className="rounded-lg p-1.5 text-slate-300 hover:text-white hover:bg-white/10 active:bg-white/20 transition-colors"
+                  title="Toggle Fullscreen"
+                  aria-label="Toggle Fullscreen"
                 >
                   <Maximize2 className="h-4 w-4 sm:h-4.5 sm:w-4.5" />
                 </button>

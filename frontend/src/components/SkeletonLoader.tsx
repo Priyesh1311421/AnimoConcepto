@@ -17,7 +17,7 @@ export const SkeletonLoader: React.FC = () => {
   }, []);
 
   return (
-    <div className="w-full max-w-2xl rounded-2xl border border-white/5 bg-white/[0.02] p-6 shadow-xl backdrop-blur-sm">
+    <div className="w-full max-w-[540px] sm:max-w-[560px] rounded-2xl border border-white/5 bg-white/[0.02] p-4 sm:p-5 shadow-xl backdrop-blur-sm">
       {/* Video Player Skeleton Placeholder */}
       <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-slate-900/60 border border-white/5 flex flex-col items-center justify-center">
         {/* Shimmer overlay */}

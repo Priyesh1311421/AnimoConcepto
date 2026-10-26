@@ -57,7 +57,7 @@ export const DocsPage: React.FC = () => {
             AnimoConcepto Documentation
           </h1>
           <p className="mt-3 sm:mt-4 text-slate-400 text-sm sm:text-base max-w-xl mx-auto">
-            Learn how to write effective prompts, understand the animation engine, and integrate exported Manim scripts.
+            Learn how to write effective prompts, understand the animation engine, and export high-definition animations.
           </p>
         </motion.div>
 
@@ -74,13 +74,13 @@ export const DocsPage: React.FC = () => {
               title: '2. Multi-turn Iteration',
               icon: Terminal,
               content:
-                'Your prompt history is preserved in each conversation. You can send follow-up messages like "Change the circle color to yellow" or "Add a title text at the top", and the AI will refactor the existing scene code accordingly.',
+                'Your prompt history is preserved in each conversation. You can send follow-up messages like "Change the circle color to yellow" or "Add a title text at the top", and the AI will refactor the existing scene accordingly.',
             },
             {
-              title: '3. Manim Community Edition Compatibility',
+              title: '3. Vector Animation Synthesis',
               icon: Code2,
               content:
-                'Generated scripts use standard Manim Community Edition syntax. All scenes subclass GeneratedScene(Scene) and construct inside construct(self).',
+                'Generated scenes use precision vector mathematics, geometric transformations, and continuous keyframing to render smooth mathematical motions.',
             },
             {
               title: '4. Video Formats & Quality',
