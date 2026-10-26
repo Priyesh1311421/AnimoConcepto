@@ -26,6 +26,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PORT=8000
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    ffmpeg \
     libcairo2 \
     libpango-1.0-0 \
     libpangocairo-1.0-0 \
