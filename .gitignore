@@ -5,3 +5,4 @@ backend/__pycache__
 /backend/.venv3.12
 /backend/.env
 .env
+/backend/help.txt
