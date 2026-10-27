@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Lock, Sparkles, AlertCircle, Loader2, Video, ArrowLeft } from 'lucide-react';
 import { api } from '../utils/api';
@@ -10,13 +10,24 @@ interface AuthScreenProps {
 
 export const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
   const navigate = useNavigate();
-  const [isLogin, setIsLogin] = useState(true);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialMode = searchParams.get('mode');
+  const [isLogin, setIsLogin] = useState(() => initialMode !== 'signup');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [registered, setRegistered] = useState(false);
+
+  useEffect(() => {
+    const currentMode = searchParams.get('mode');
+    if (currentMode === 'signup') {
+      setIsLogin(false);
+    } else if (currentMode === 'login') {
+      setIsLogin(true);
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,13 +48,20 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
       if (isLogin) {
         await api.login(email, password);
         onAuthSuccess();
+        navigate('/app');
       } else {
         await api.register(email, password);
-        setRegistered(true);
-        setIsLogin(true);
-        setPassword('');
-        setConfirmPassword('');
-        setError(null);
+        try {
+          await api.login(email, password);
+          onAuthSuccess();
+          navigate('/app');
+        } catch {
+          setRegistered(true);
+          setIsLogin(true);
+          setPassword('');
+          setConfirmPassword('');
+          setError(null);
+        }
       }
     } catch (err: any) {
       setError(err.message || 'An error occurred. Please try again.');
@@ -94,12 +112,27 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
         transition={{ duration: 0.5, delay: 0.1 }}
         className="w-full max-w-md rounded-2xl border border-[#002e4e] bg-[#001a2c] p-6 sm:p-8 shadow-2xl backdrop-blur-xl"
       >
+        {/* If already signed in, show status banner */}
+        {api.getToken() && (
+          <div className="mb-5 rounded-xl border border-sky-500/25 bg-sky-950/30 p-3 sm:p-3.5 text-xs text-sky-300 flex items-center justify-between shadow-lg">
+            <span>You are currently signed in.</span>
+            <button
+              type="button"
+              onClick={() => navigate('/app')}
+              className="font-bold underline hover:text-white ml-2 transition-colors"
+            >
+              Go to Studio →
+            </button>
+          </div>
+        )}
+
         {/* Toggle tabs */}
         <div className="mb-6 flex rounded-lg bg-[#00111c] p-1 border border-[#002e4e]">
           <button
             type="button"
             onClick={() => {
               setIsLogin(true);
+              setSearchParams({ mode: 'login' });
               setError(null);
               setRegistered(false);
             }}
@@ -115,6 +148,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
             type="button"
             onClick={() => {
               setIsLogin(false);
+              setSearchParams({ mode: 'signup' });
               setError(null);
               setRegistered(false);
             }}

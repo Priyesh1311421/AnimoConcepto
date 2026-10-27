@@ -299,20 +299,33 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
           >
             <GithubIcon className="h-4 w-4" />
           </a>
-          <button
-            onClick={() => navigate('/auth')}
-            className="hidden xs:inline-flex rounded-full border border-[#002e4e] bg-[#001a2c] px-4 sm:px-5 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold text-slate-300 transition-all hover:bg-[#00253e] hover:text-white"
-          >
-            Login
-          </button>
-          <motion.button
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-            onClick={() => navigate('/auth')}
-            className="rounded-full bg-[#00406c] border border-[#005a96] px-4 sm:px-6 py-1.5 sm:py-2 text-xs sm:text-sm font-bold shadow-lg shadow-[#00406c]/30 transition-all hover:bg-[#005a96]"
-          >
-            Sign up free
-          </motion.button>
+          {api.getToken() ? (
+            <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={() => navigate('/app')}
+              className="rounded-full bg-[#00406c] border border-[#005a96] px-5 sm:px-6 py-1.5 sm:py-2 text-xs sm:text-sm font-bold text-white shadow-lg shadow-[#00406c]/30 transition-all hover:bg-[#005a96]"
+            >
+              Go to Studio →
+            </motion.button>
+          ) : (
+            <>
+              <button
+                onClick={() => navigate('/auth?mode=login')}
+                className="hidden xs:inline-flex rounded-full border border-[#002e4e] bg-[#001a2c] px-4 sm:px-5 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold text-slate-300 transition-all hover:bg-[#00253e] hover:text-white"
+              >
+                Login
+              </button>
+              <motion.button
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => navigate('/auth?mode=signup')}
+                className="rounded-full bg-[#00406c] border border-[#005a96] px-4 sm:px-6 py-1.5 sm:py-2 text-xs sm:text-sm font-bold shadow-lg shadow-[#00406c]/30 transition-all hover:bg-[#005a96]"
+              >
+                Sign up free
+              </motion.button>
+            </>
+          )}
 
           {/* Mobile Menu Toggle Button */}
           <button
@@ -375,15 +388,40 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
                   <GithubIcon className="h-4 w-4" />
                   <span>GitHub</span>
                 </a>
-                <button
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    navigate('/auth');
-                  }}
-                  className="rounded-full border border-[#002e4e] bg-[#001a2c] px-4 py-1.5 text-xs font-semibold text-slate-300"
-                >
-                  Login
-                </button>
+                <div className="flex items-center gap-2">
+                  {api.getToken() ? (
+                    <button
+                      onClick={() => {
+                        setMobileMenuOpen(false);
+                        navigate('/app');
+                      }}
+                      className="rounded-full bg-[#00406c] border border-[#005a96] px-4 py-1.5 text-xs font-bold text-white shadow-md shadow-[#00406c]/30"
+                    >
+                      Go to Studio →
+                    </button>
+                  ) : (
+                    <>
+                      <button
+                        onClick={() => {
+                          setMobileMenuOpen(false);
+                          navigate('/auth?mode=login');
+                        }}
+                        className="rounded-full border border-[#002e4e] bg-[#001a2c] px-3.5 py-1.5 text-xs font-semibold text-slate-300"
+                      >
+                        Login
+                      </button>
+                      <button
+                        onClick={() => {
+                          setMobileMenuOpen(false);
+                          navigate('/auth?mode=signup');
+                        }}
+                        className="rounded-full bg-[#00406c] border border-[#005a96] px-3.5 py-1.5 text-xs font-bold text-white shadow-md shadow-[#00406c]/30"
+                      >
+                        Sign up
+                      </button>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
           </motion.div>

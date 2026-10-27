@@ -33,7 +33,7 @@ export const FeaturesPage: React.FC = () => {
           </Link>
 
           <button
-            onClick={() => navigate('/auth')}
+            onClick={() => navigate('/auth?mode=signup')}
             className="rounded-full bg-[#00406c] hover:bg-[#005a96] border border-[#005a96] px-3.5 sm:px-5 py-1.5 sm:py-2 text-xs font-bold text-white shadow-lg shadow-[#00406c]/30 transition-all shrink-0"
           >
             Try for free
