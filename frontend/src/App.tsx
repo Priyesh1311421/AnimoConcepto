@@ -9,7 +9,7 @@ import { BlogPage } from './components/BlogPage';
 import { Sidebar } from './components/Sidebar';
 import { ChatArea } from './components/ChatArea';
 import { api } from './utils/api';
-
+import { Analytics } from "@vercel/analytics/react  "
 interface Conversation {
   id: string;
   title: string;
@@ -199,6 +199,7 @@ export const App: React.FC = () => {
 
   return (
     <BrowserRouter>
+      <Analytics />
       <Routes>
         <Route path="/" element={<LandingPage onGetStarted={() => { }} />} />
         <Route
